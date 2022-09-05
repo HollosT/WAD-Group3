@@ -11,6 +11,12 @@ GO
 ALTER TABLE jobTask
 DROP CONSTRAINT IF EXISTS jobFK_Task_Account 
 GO
+ALTER TABLE jobTask
+DROP CONSTRAINT IF EXISTS jobFK_Task_Category
+GO
+ALTER TABLE jobTask
+DROP CONSTRAINT IF EXISTS jobFK_Task_Status
+GO
 DROP TABLE IF EXISTS jobTask
 GO
 
@@ -29,9 +35,34 @@ GO
 DROP TABLE IF EXISTS jobRole
 GO
 
+DROP TABLE IF EXISTS jobCategory
+GO
+
+DROP TABLE IF EXISTS jobStatus
+GO
+
 
 
 --------------- 2) table definitions
+CREATE TABLE jobCategory 
+(
+    categoryid INT NOT NULL IDENTITY PRIMARY KEY,
+    -- primary key: categoryid
+    categoryname NVARCHAR(50) NOT NULL,
+    categorydescription NVARCHAR(255)
+)
+GO
+
+CREATE TABLE jobStatus
+(
+    statusid INT NOT NULL IDENTITY PRIMARY KEY,
+    -- primary key: statusid
+    statusname NVARCHAR(50) NOT NULL,
+    statusdescription NVARCHAR(255)
+)
+GO
+
+
 CREATE TABLE jobRole
 (
     roleid INT NOT NULL IDENTITY PRIMARY KEY,
@@ -49,7 +80,7 @@ CREATE TABLE jobProfile
     lastname NVARCHAR(50) NOT NULL,
     phonenumber INT NOT NULL UNIQUE,
     profiledescription NVARCHAR(255),
-    profilepicture IMAGE --??????? or VARBINARY(MAX)
+    profilepicture NVARCHAR(MAX)
 )
 GO
 
@@ -70,14 +101,15 @@ CREATE TABLE jobTask
     taskid INT NOT NULL IDENTITY PRIMARY KEY,
     tasktitle NVARCHAR(50) NOT NULL,
     taskdescription NVARCHAR(255) NOT NULL,
-    taskcity NVARCHAR(50) NOT NULL,
-    taskzipcode INT NOT NULL,
-    taskstreetname NVARCHAR(255) NOT NULL,
-    -- taskdate INT --- ?????????????????,
-    --taskyear INT NOT NULL, taskmonth, taskyear? What if its not only one day, but  a longer period of time
+    taskaddress NVARCHAR(MAX) NOT NULL,
+    taskpostdate BIGINT NOT NULL,
     FK_accountid INT NOT NULL,
+    FK_categoryid INT NOT NULL,
+    FK_statusid INT NOT NULL,
 
-    CONSTRAINT jobFK_Task_Account FOREIGN KEY (FK_accountid) REFERENCES jobAccount (accountid)
+    CONSTRAINT jobFK_Task_Account FOREIGN KEY (FK_accountid) REFERENCES jobAccount (accountid),
+    CONSTRAINT jobFK_Task_Category FOREIGN KEY (FK_categoryid) REFERENCES jobCategory (categoryid),
+    CONSTRAINT jobFK_Task_Status FOREIGN KEY (FK_statusid) REFERENCES jobStatus (statusid),
 )
 GO
 
@@ -95,6 +127,20 @@ GO
 
 
 -------- 3) populating test data
+INSERT INTO jobStatus
+    ([statusname], [statusdescription])
+    VALUES
+    ('available', 'This task is currently open.'),
+    ('expired', 'This task no lnger available.')
+
+
+INSERT INTO jobCategory 
+    ([categoryname], [categorydescription])
+    VALUES
+    ('indoor', 'Tasks that will be performed inside.'),
+    ('outdoor', 'Tasks that will be performed outside.')
+GO
+
 INSERT INTO jobRole 
     ([rolename], [roledescription])
     VALUES
@@ -105,25 +151,29 @@ GO
 INSERT INTO jobProfile
     ([firstname], [lastname], [phonenumber], [profiledescription], [profilepicture])
     VALUES
-    ('Jan', 'Kowalski', '45892642', 'Hello bla bla bla here i am', NULL)
+    ('Jan', 'Kowalski', '45892642', 'Hello bla bla bla here i am', NULL),
+    ('Lili', 'Obrien', '73727722', 'I am a preffessional horse rider.', NULL)
 GO
 
 INSERT INTO jobAccount 
     ([email], [FK_profileid], [FK_roleid])
     VALUES 
-    ('ralala@gmai.com', 1, 2)
+    ('ralala@gmail.com', 1, 2),
+    ('blue@gmail.com', 2, 2),
 GO
 
 INSERT INTO jobTask
-    ([tasktitle], [taskdescription], [taskcity], [taskzipcode], [taskstreetname], [FK_accountid])
+    ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [FK_accountid], [FK_categoryid], [FK_statusid])
     VALUES
-    ('babysitter', 'Help with the child', 'Aalborg', '9000', 'Nytorv', 1)
+    ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', '2022-08-31', 1, 1, 1),
+    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', '2022-09-01', 2, 2, 2),
 GO
 
 INSERT INTO jobPassword 
     ([FK_accountid], [hashedpassword])
     VALUES
-    (1, '012938475483@#$')
+    (1, '012938475483@#$'),
+    (2, 'assasdafsfadfds@#$')
 GO
 
 
@@ -139,5 +189,9 @@ SELECT * FROM jobAccount a
             ON t.FK_accountid = a.accountid
                 INNER JOIN jobRole r 
                 ON a.FK_roleid = r.roleid
+                INNER JOIN jobCategory c
+                ON t.FK_categoryid = c.categoryid
+                INNER JOIN jobStatus s 
+                ON t.FK_statusid = s.statusid
                 ORDER BY a.accountid
 GO
