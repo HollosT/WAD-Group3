@@ -179,7 +179,7 @@ GO
 
 
 
------------- 4) verifying the database
+---------- 4) verifying the database
 SELECT * FROM jobAccount a 
     INNER JOIN jobPassword p
     ON a.accountid = p.FK_accountid
@@ -195,3 +195,4 @@ SELECT * FROM jobAccount a
                 ON t.FK_statusid = s.statusid
                 ORDER BY a.accountid
 GO
+
