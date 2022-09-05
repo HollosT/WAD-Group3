@@ -159,14 +159,14 @@ INSERT INTO jobAccount
     ([email], [FK_profileid], [FK_roleid])
     VALUES 
     ('ralala@gmail.com', 1, 2),
-    ('blue@gmail.com', 2, 2),
+    ('blue@gmail.com', 2, 2)
 GO
 
 INSERT INTO jobTask
     ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [FK_accountid], [FK_categoryid], [FK_statusid])
     VALUES
-    ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', '2022-08-31', 1, 1, 1),
-    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', '2022-09-01', 2, 2, 2),
+    ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', 20220831, 1, 1, 1),
+    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', 20220901, 2, 2, 2)
 GO
 
 INSERT INTO jobPassword 
