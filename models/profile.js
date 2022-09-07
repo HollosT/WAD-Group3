@@ -7,14 +7,14 @@ const con = config.get("dbConfig_UCN");
 class Profile {
     constructor(profileObj) {
         this.profileid = profileObj.profileid;
-        this.firstname = profileObj.email;
+        this.firstname = profileObj.firstname;
         this.lastname = profileObj.lastname;
         this.phonenumber = profileObj.phonenumber;
-        this.description = profileObj.profiledescription;
-        this.pictureurl = profileObj.profilepicture;
+        this.profiledescription = profileObj.profiledescription;
+        this.profilepicture = profileObj.profilepicture;
       }
     
-      static validationSchema(profileObj){
+      static validationSchema(){
         const schema = Joi.object({
             profileid: Joi.number()
             .integer()
@@ -28,11 +28,12 @@ class Profile {
             phonenumber: Joi.number()
             .integer()
             .required(),
-            description: Joi.string()
+            profiledescription: Joi.string()
             .max(255),
-            profileurl: Joi.string()
+            profilepicture: Joi.string()
             .uri(255),
         })
+        console.log('test');
         return schema
       }
     

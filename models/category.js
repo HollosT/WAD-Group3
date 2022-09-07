@@ -10,7 +10,7 @@ class Category {
     this.categoryname = categoryObj.categoryname;
   }
 
-  static validationSchema(categoryObj){
+  static validationSchema(){
     const schema = Joi.object({
         categoryid: Joi.number()
         .integer()

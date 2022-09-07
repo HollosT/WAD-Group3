@@ -26,7 +26,7 @@ class Task {
         this.categoryArr = _.cloneDeep(taskObj.categoryArr);
     }
 
-    static validationSchema(taskObj){
+    static validationSchema(){
         const schema = Joi.object({
             taskid: Joi.number()
             .integer()
@@ -58,9 +58,11 @@ class Task {
 
     static readAll() {
         return new Promise((resolve, reject) => {
+            
             (async () => {
                try { 
                     const pool = await sql.connect(con)
+                    
                     // we want to get everything from a job task
                     // join task with account
                     // join profile with account
@@ -85,7 +87,6 @@ class Task {
                     );
                     
                     const tasksCollection = [];
-
                     result.recordset.forEach((record) => {
                         const newTask = {
                             taskid: record.taskid,
@@ -126,18 +127,19 @@ class Task {
                     // validation
                     const tasks = [];
                     tasksCollection.forEach((task) => {
+                        
                         const {error} = Task.validate(task);
                         
                         if (error)
                         throw {
                             statusCode: 500,
                             errorMessage: `Corrupt task information in the database, taskid: ${task.taskid}`,
-                            errorObj: error
+                            errorObj: error,
                             };
 
                             tasks.push(new Task(task));
                     })
-
+                   
                     resolve(tasks)
 
                 } catch(err) {

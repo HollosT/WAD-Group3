@@ -10,7 +10,7 @@ class Account {
         this.email = accountObj.email;
       }
     
-      static validationSchema(accountObj){
+      static validationSchema(){
         const schema = Joi.object({
             accountid: Joi.number()
             .integer()
