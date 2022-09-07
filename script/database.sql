@@ -101,7 +101,7 @@ CREATE TABLE jobTask
     taskid INT NOT NULL IDENTITY PRIMARY KEY,
     tasktitle NVARCHAR(50) NOT NULL,
     taskdescription NVARCHAR(255) NOT NULL,
-    taskaddress NVARCHAR(MAX) NOT NULL,
+    taskaddress NVARCHAR(255) NOT NULL,
     taskpostdate BIGINT NOT NULL,
     FK_accountid INT NOT NULL,
     FK_categoryid INT NOT NULL,
