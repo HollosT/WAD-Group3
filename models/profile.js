@@ -31,7 +31,8 @@ class Profile {
             profiledescription: Joi.string()
             .max(255),
             profilepicture: Joi.string()
-            .uri(255),
+            .uri()
+            .max(255)
         })
         console.log('test');
         return schema

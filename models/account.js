@@ -15,9 +15,10 @@ class Account {
             accountid: Joi.number()
             .integer()
             .min(1),
-            email: Joi.email()
+            email: Joi.string()
+            .email()
             .max(255)
-            .required()
+            .required(),
         })
         return schema
       }

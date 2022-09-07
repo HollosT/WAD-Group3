@@ -13,7 +13,7 @@ const { max } = require('lodash');
 
 class Task {
     constructor(taskObj) {
-        if(taskObj.taskid) {
+        if (taskObj.taskid) {
             this.taskid = taskObj.taskid;
         }
         this.tasktitle = taskObj.tasktitle;
@@ -25,29 +25,30 @@ class Task {
         this.statusArr = _.cloneDeep(taskObj.statusArr);
         this.categoryArr = _.cloneDeep(taskObj.categoryArr);
     }
-
-    static validationSchema(){
+  
+    static validationSchema() {
         const schema = Joi.object({
             taskid: Joi.number()
-            .integer()
-            .min(1),
+                .integer()
+                .min(1),
             tasktitle: Joi.string()
-            .max(50)
-            .required(),
+                .max(50)
+                .required(),
             taskdescription: Joi.string()
-            .max(255)
-            .required(),
+                .max(255)
+                .required(),
             taskaddress: Joi.string()
-            .max(255)
-            .required(),
+                .max(255)
+                .required(),
             taskpostdate: Joi.number()
-            .integer()
-            .required(),
-            profileArr: Joi.array().items(Profile.validationSchema()), 
+                .integer()
+                .required(),
+            profileArr: Joi.array().items(Profile.validationSchema()),
             accountArr: Joi.array().items(Account.validationSchema()),
             statusArr: Joi.array().items(Status.validationSchema()),
             categoryArr: Joi.array().items(Category.validationSchema()),
         })
+        
         return schema;
     }
 
@@ -58,11 +59,11 @@ class Task {
 
     static readAll() {
         return new Promise((resolve, reject) => {
-            
+
             (async () => {
-               try { 
+                try {
                     const pool = await sql.connect(con)
-                    
+
                     // we want to get everything from a job task
                     // join task with account
                     // join profile with account
@@ -85,7 +86,7 @@ class Task {
                         ORDER BY t.taskid
                         `
                     );
-                    
+
                     const tasksCollection = [];
                     result.recordset.forEach((record) => {
                         const newTask = {
@@ -123,31 +124,32 @@ class Task {
                         }
                         tasksCollection.push(newTask)
                     });
-                    
+
                     // validation
                     const tasks = [];
                     tasksCollection.forEach((task) => {
                         
-                        const {error} = Task.validate(task);
+                        const { error } = Task.validate(task);
                         
                         if (error)
-                        throw {
-                            statusCode: 500,
-                            errorMessage: `Corrupt task information in the database, taskid: ${task.taskid}`,
-                            errorObj: error,
+                            throw {
+                                statusCode: 500,
+                                errorMessage: `Corrupt task information in the database, taskid: ${task.taskid}`,
+                                errorObj: error,
                             };
 
-                            tasks.push(new Task(task));
+
+                        tasks.push(new Task(task));
                     })
-                   
+
                     resolve(tasks)
 
-                } catch(err) {
+                } catch (err) {
                     reject(err);
                 }
                 sql.close();
             })();
-        }) 
+        })
     }
 
 
