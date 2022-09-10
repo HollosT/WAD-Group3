@@ -5,8 +5,8 @@ const router = express.Router();
 const Task = require("../models/task");
 // Get all the tasks
 router.get("/", async (req, res) => {
-  res.header("Content-type", "application/json");
   try {
+    res.header("Content-type", "application/json");
     // queries
     let taskSets = [];
     Object.keys(req.query).forEach((key) => {
@@ -60,11 +60,11 @@ router.get("/", async (req, res) => {
     }
 
     // all tasks
-    // const tasks = await Task.readAll();
+    const allTasks = await Task.readAll();
+    res.send(JSON.stringify(allTasks));
   } catch (err) {
-    if (err.statusCode)
-      return res.status(err.statusCode).send(JSON.stringify(err));
-    return res.status(500).send(JSON.stringify(err));
+    if (err.statusCode)return res.status(err.statusCode).send(JSON.stringify(err));
+    // return res.status(500).send(JSON.stringify(err));
   }
 });
 
