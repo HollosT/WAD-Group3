@@ -13,25 +13,23 @@ router.get("/", async (req, res) => {
       taskSets.push(new Set());
     });
 
-    // console.log(req.query);
-
     // if we have query parameters
     if (taskSets.length > 0) {
       const allTasks = await Task.readAll();
-      //   console.log(allTasks);
 
       allTasks.forEach((singleTask) => {
-        //   console.log(taskSets);
-        console.log(req.query.categoryname);
+        
         for (let i = 0; i < taskSets.length; i++) {
-          //   console.log(singleTask);
-          switch (Object.keys(req.query)[i]) {
+            console.log(Object.values(req.query)[i]);
+          switch (Object.values(req.query)[i]) {
             case "outdoor":
               if (
                 singleTask.categoryArr[0].categoryname.includes(
                   req.query.categoryname
-                )
+                  )
+                  
               ) {
+                // console.log(singleTask);
                 taskSets[i].add(singleTask);
                 // res.send(JSON.stringify(singleTask));
               }
@@ -49,12 +47,14 @@ router.get("/", async (req, res) => {
             default:
               break;
           }
-          console.log(taskSets);
+        //   console.log(singleTask);
+          //   console.log(taskSets);
         }
       });
       let tasks;
       if (taskSets.length == 1) {
         tasks = Array.from(taskSets[0]);
+        // console.log(tasks)
       }
       res.send(JSON.stringify(tasks));
     }
