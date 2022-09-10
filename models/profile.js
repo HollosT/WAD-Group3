@@ -34,7 +34,6 @@ class Profile {
             .uri()
             .max(255)
         })
-        console.log('test');
         return schema
       }
     

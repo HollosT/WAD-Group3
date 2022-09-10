@@ -11,7 +11,7 @@ class Status {
   }
 
   static validationSchema() {
-    console.log('hello');
+  
     const schema = Joi.object({
         statusid: Joi.number()
         .integer()

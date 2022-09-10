@@ -57,6 +57,7 @@ class Task {
         return schema.validate(taskObj)
     }
 
+    // Get all the tasks
     static readAll() {
         return new Promise((resolve, reject) => {
 
@@ -152,6 +153,19 @@ class Task {
         })
     }
 
+    static readCategory() {
+        return new Promise((resolve, reject) => {
+            (async () => {
+                try {
+
+                } catch (err) {
+
+                }
+            })();
+        })
+    }
+    // queries 
+    // after opening the database join task table and catrgory table
 
 }
 
