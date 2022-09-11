@@ -172,10 +172,12 @@ GO
 INSERT INTO jobPassword 
     ([FK_accountid], [hashedpassword])
     VALUES
-    (1, '012938475483@#$'),
-    (2, 'assasdafsfadfds@#$')
+    (1, '$2y$10$QZnMgj.35zylTpuYsWtYPO/JbVe78vNWAuJkIlytZemDHmr/3IUcG'),
+    (2, '$2y$10$QZnMgj.35zylTpuYsWtYPO/JbVe78vNWAuJkIlytZemDHmr/3IUcG')
 GO
-
+-- Passwords: 
+-- (1, bike)
+-- (2, dog)
 
 
 

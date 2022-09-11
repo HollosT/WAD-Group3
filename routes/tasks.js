@@ -29,9 +29,8 @@ router.get("/", async (req, res) => {
                   )
                   
               ) {
-                // console.log(singleTask);
                 taskSets[i].add(singleTask);
-                // res.send(JSON.stringify(singleTask));
+
               }
               break;
             case "indoor":
@@ -41,20 +40,19 @@ router.get("/", async (req, res) => {
                 )
               ) {
                 taskSets[i].add(singleTask);
-                // res.send(JSON.stringify(singleTask));
+               
               }
               break;
             default:
               break;
           }
-        //   console.log(singleTask);
-          //   console.log(taskSets);
+      
         }
       });
       let tasks;
       if (taskSets.length == 1) {
         tasks = Array.from(taskSets[0]);
-        // console.log(tasks)
+    
       }
       res.send(JSON.stringify(tasks));
     }
@@ -64,7 +62,7 @@ router.get("/", async (req, res) => {
     res.send(JSON.stringify(allTasks));
   } catch (err) {
     if (err.statusCode)return res.status(err.statusCode).send(JSON.stringify(err));
-    // return res.status(500).send(JSON.stringify(err));
+    // return res.status(500).send(JSON.stringify(err)); !!!!! Chrashes nodemon
   }
 });
 
