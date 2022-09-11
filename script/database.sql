@@ -1,4 +1,4 @@
-USE [WAD-MMD-CSD-S21_10407015]
+USE [WAD-MMD-CSD-S21_10407745]
 GO
 
 --------------- 1) dropping all the tables and contraints
@@ -172,7 +172,7 @@ GO
 INSERT INTO jobPassword 
     ([FK_accountid], [hashedpassword])
     VALUES
-    (1, '$2y$10$QZnMgj.35zylTpuYsWtYPO/JbVe78vNWAuJkIlytZemDHmr/3IUcG'),
+    (1, '$2a$13$Q2jY.Mj2BDR1cXCuw3.8XuaoacsCg/5qtTmwt66AeNsSJLd/qEBPO'),
     (2, '$2y$10$QZnMgj.35zylTpuYsWtYPO/JbVe78vNWAuJkIlytZemDHmr/3IUcG')
 GO
 -- Passwords: 

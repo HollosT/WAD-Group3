@@ -78,7 +78,7 @@ class Account {
               `)
               
               if (result.recordset.length != 1) throw { statusCode: 500, errorMessage: `Corrupt DB.`, errorObj: {} }
-              
+              console.log(result.recordset[0]);
               const hashedPassword = result.recordset[0].hashedpassword;
 
               
