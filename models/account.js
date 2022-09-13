@@ -78,9 +78,7 @@ class Account {
           
           if (result.recordset.length != 1) throw { statusCode: 500, errorMessage: `Corrupt DB.`, errorObj: {} }
           const hashedPassword = result.recordset[0].hashedpassword;
-          
-          
-          console.log(credentialObj.password);
+        
           const okCredentials = bcrypt.compareSync(credentialObj.password, hashedPassword);
           if (!okCredentials) throw { statusCode: 401 }
 
