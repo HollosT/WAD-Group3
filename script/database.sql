@@ -173,10 +173,10 @@ INSERT INTO jobPassword
     ([FK_accountid], [hashedpassword])
     VALUES
     (1, '$2a$13$Q2jY.Mj2BDR1cXCuw3.8XuaoacsCg/5qtTmwt66AeNsSJLd/qEBPO'),
-    (2, '$2y$10$QZnMgj.35zylTpuYsWtYPO/JbVe78vNWAuJkIlytZemDHmr/3IUcG')
+    (2, '$2a$13$NMHMd75HwjKB2H2oumBQdurBTFfnrHy.pQnv/lrUcqIWuwODZU8QG')
 GO
 -- Passwords: 
--- (1, bike)
+-- (1, cat)
 -- (2, dog)
 
 

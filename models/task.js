@@ -7,7 +7,7 @@ const _ = require('lodash')
 
 const Status = require('./status');
 const Category = require('./category')
-const Account = require('./account')
+const Account = require('./account');
 const Profile = require('./profile');
 const { max } = require('lodash');
 
@@ -124,6 +124,7 @@ class Task {
                             ]
                         }
                         tasksCollection.push(newTask)
+                        console.log(newTask);
                     });
 
                     // validation
