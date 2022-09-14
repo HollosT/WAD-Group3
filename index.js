@@ -14,7 +14,7 @@ const login = require('./routes/login')
 app.use(express.json());
 app.use(cors());
 app.use('/api/tasks', tasks)
-app.use('/api/login', login)
+app.use('/api/accounts/login', login)
 
 
 app.listen(config.get('port'), () => console.log(`Listening on port: ${config.get('port')}...`));

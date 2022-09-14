@@ -17,6 +17,10 @@ router.post('/', async (req, res) => {
         // check crendetials
         const account = await Account.checkCredentials(req.body)
 
+        const token = jwt.sign(JSON.stringify(account), config.get('jwt_secret_key'));
+
+        res.header('x-authentication-token', token)
+
         return res.send(JSON.stringify(account))
     }catch(err) {
         if (err.statusCode) return res.status(err.statusCode).send(JSON.stringify(err));
