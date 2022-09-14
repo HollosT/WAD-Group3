@@ -1,12 +1,12 @@
 const express = require("express");
 const { object } = require("joi");
+const autheticate = require("../middleware/autheticate");
 const router = express.Router();
 
 const Task = require("../models/task");
 // Get all the tasks
 router.get("/", async (req, res) => {
   try {
-    res.header("Content-type", "application/json");
     // queries
     let taskSets = [];
     Object.keys(req.query).forEach((key) => {
@@ -64,5 +64,14 @@ router.get("/", async (req, res) => {
     // return res.status(500).send(JSON.stringify(err)); !!!!! Chrashes nodemon
   }
 });
+
+router.post('/', [autheticate], async(req, res) => {
+  try{
+      res.send(JSON.stringify({message: 'Authorized'}))
+  } catch(err) {
+    if (err.statusCode)return res.status(err.statusCode).send(JSON.stringify(err));
+  
+  }
+})
 
 module.exports = router;

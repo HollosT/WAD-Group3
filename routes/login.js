@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 
 router.post('/', async (req, res) => {
-    res.header('Content-type', 'application/json');
 
     try{
         // Validate the req.body
@@ -15,13 +14,16 @@ router.post('/', async (req, res) => {
         if (error) throw { statusCode: 400, errorMessage: 'Badly formed request payload', errorObj: error }
         
         // check crendetials
-        const account = await Account.checkCredentials(req.body)
+        const account = await Account.checkCredentials(req.body);
 
+        // generate a token
         const token = jwt.sign(JSON.stringify(account), config.get('jwt_secret_key'));
 
-        res.header('x-authentication-token', token)
+        // attach the token to the response header
+        res.header('x-authentication-token', token);
+        console.log(token);
 
-        return res.send(JSON.stringify(account))
+        return res.send(JSON.stringify(account));
     }catch(err) {
         if (err.statusCode) return res.status(err.statusCode).send(JSON.stringify(err));
         return res.status(500).send(JSON.stringify(err));
