@@ -14,7 +14,10 @@ const login = require('./routes/login')
 
 
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+    exposedHeaders: ['x-authentication-token']
+}
+app.use(cors(corsOptions));
 app.use(responseHeader)
 
 app.use('/api/tasks', tasks)
