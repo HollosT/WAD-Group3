@@ -124,7 +124,6 @@ class Task {
                             ]
                         }
                         tasksCollection.push(newTask)
-                        console.log(newTask);
                     });
 
                     // validation

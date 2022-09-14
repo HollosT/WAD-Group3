@@ -20,7 +20,6 @@ router.get("/", async (req, res) => {
       allTasks.forEach((singleTask) => {
         
         for (let i = 0; i < taskSets.length; i++) {
-            console.log(Object.values(req.query)[i]);
           switch (Object.values(req.query)[i]) {
             case "outdoor":
               if (
