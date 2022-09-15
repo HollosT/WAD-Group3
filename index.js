@@ -11,6 +11,7 @@ const responseHeader = require('./middleware/responseHeaderJSOn')
 // Routes variables
 const tasks = require('./routes/tasks')
 const login = require('./routes/login')
+const accounts = require('./routes/accounts')
 
 
 app.use(express.json());
