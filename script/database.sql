@@ -78,7 +78,7 @@ CREATE TABLE jobProfile
     -- primary key: profileid
     firstname NVARCHAR(50) NOT NULL,
     lastname NVARCHAR(50) NOT NULL,
-    phonenumber INT NOT NULL UNIQUE,
+    phonenumber NVARCHAR(50) NOT NULL UNIQUE,
     profiledescription NVARCHAR(255),
     profilepicture NVARCHAR(MAX)
 )
@@ -89,7 +89,7 @@ CREATE TABLE jobAccount
     accountid INT NOT NULL IDENTITY PRIMARY KEY,
     email NVARCHAR(255) NOT NULL UNIQUE,
     FK_profileid INT NOT NULL,
-    FK_roleid INT NOT NULL,
+    FK_roleid INT NOT NULL DEFAULT 2,
 
     CONSTRAINT jobFK_Account_Profile FOREIGN KEY (FK_profileid) REFERENCES jobProfile (profileid),
     CONSTRAINT jobFK_Account_Role FOREIGN KEY (FK_roleid) REFERENCES jobRole (roleid)
@@ -156,10 +156,10 @@ INSERT INTO jobProfile
 GO
 
 INSERT INTO jobAccount 
-    ([email], [FK_profileid], [FK_roleid])
+    ([email], [FK_profileid])
     VALUES 
-    ('ralala@gmail.com', 1, 2),
-    ('blue@gmail.com', 2, 2)
+    ('ralala@gmail.com', 1),
+    ('blue@gmail.com', 2)
 GO
 
 INSERT INTO jobTask

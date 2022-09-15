@@ -12,11 +12,13 @@ class Account {
     }
     this.email = accountObj.email;
     this.profileid = accountObj.profileid;
-    this.role = {
-      roleid: accountObj.role.roleid
-    }
-    if (accountObj.role.rolename) {
-      this.role.rolename = accountObj.role.rolename
+    if(accountObj.role){
+      this.role = {
+        roleid: accountObj.role.roleid,
+      }
+      if (accountObj.role.rolename) {
+          this.role.rolename = accountObj.role.rolename;
+      }
     }
   }
 
@@ -133,6 +135,106 @@ class Account {
           reject(err)
         }
         sql.close();
+      })()
+    })
+  }
+
+  // creating a password method
+
+  create(password, profileObj) {
+    return new Promise((resolve, reject) => {
+      (async () => {
+          try {
+
+            // checking wther the account exists
+            // if no error (exists) then reject
+            try {
+              const account = await Account.readByEmail(this.email);
+              const error = {statusCode: 409, errorMessage: `Account with email ${this.email} already exists`, errorObj: {}}
+              reject (error);
+
+            } catch(err) {
+              if(!err.statusCode || err.statusCode != 404) {
+                reject(err);
+              }
+            }
+
+            // inserting new account if the email does not exist in the DB
+            const pool = await sql.connect(con);
+
+            // allow description and image not to be filled out
+            if(!profileObj.profiledescription) {
+              profileObj.profiledescription = null;
+            }
+            if(!profileObj.profilepicture) {
+              profileObj.profilepicture = null;
+            }
+
+            // inserting into the profile table
+            const resultProfile = await pool.request()
+              .input('firstname', sql.NVarChar(), profileObj.firstname)
+              .input('lastname', sql.NVarChar(), profileObj.lastname)
+              .input('phonenumber', sql.NVarChar(), profileObj.phonenumber)
+              .input('profiledescription', sql.NVarChar(), profileObj.profiledescription)
+              .input('profilepicture', sql.NVarChar(), profileObj.profilepicture)
+
+              .query(`
+                	INSERT INTO jobProfile
+                    ([firstname], [lastname], [phonenumber], [profiledescription], [profilepicture])
+                  VALUES
+                    (@firstname, @lastname, @phonenumber, @profiledescription, @profilepicture);
+                  SELECT * FROM jobProfile jp
+                  WHERE jp.profileid = SCOPE_IDENTITY()
+              `)
+
+            // checking wether we have exactly 1 line inserted
+            if(resultProfile.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+            console.log(resultProfile.recordset[0]);
+            // inserting into the account table
+            const profileid = resultProfile.recordset[0].profileid;
+            const resultAccount = await pool.request()
+              .input('email', sql.NVarChar(), this.email)
+              .input('profileid', sql.Int(), profileid)
+              .query(`
+                INSERT INTO jobAccount 
+                  ([email], [FK_profileid])
+                VALUES
+                  (@email, @profileid)
+                SELECT * FROM jobAccount ja
+                WHERE ja.accountid = SCOPE_IDENTITY()
+              `)
+
+            // checking wether we have exactly 1 line inserted
+            if(resultAccount.recordeet.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+            
+            // inserting the hashed password into password table
+
+            const hashedpassword = bcrypt.hashSync(password);
+            const accountid = resultAccount.recordset[0].accountid;
+
+            const resultPassword = await pool.request()
+              .input('accountid', sql.Int(), accountid)
+              .input('hashedpassword', sql.NVarChar(), hashedpassword)
+              .query(`
+                INSERT INTO jobPassword
+                  ([FK_accountid], [hashedpassword])
+                VALUES
+                  (@accountid, @hashedpassword)
+                SELECT * FROM jobPassword jp
+                WHERE jp.FK_accountid = @accountid
+              `)
+
+              // checking wether we have exactly 1 line inserted
+            if(resultPassword.recordeet.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+            sql.close();
+            
+            const account = await Account.readByEmail(accountObj.email);
+            resolve(account);
+
+          } catch(err) {
+            reject(err);
+          }
+          sql.close();
       })()
     })
   }
