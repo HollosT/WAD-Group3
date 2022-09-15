@@ -5,6 +5,8 @@ const config = require("config");
 const con = config.get("dbConfig_UCN");
 const bcrypt = require('bcryptjs')
 
+const Profile = require('./profile')
+
 class Account {
   constructor(accountObj) {
     if (accountObj.accountid) {
@@ -139,6 +141,8 @@ class Account {
     })
   }
 
+  
+
   // creating a password method
 
   create(password, profileObj) {
@@ -146,11 +150,23 @@ class Account {
       (async () => {
           try {
 
-            // checking wther the account exists
+            // checking wther the account exists by email
             // if no error (exists) then reject
             try {
               const account = await Account.readByEmail(this.email);
               const error = {statusCode: 409, errorMessage: `Account with email ${this.email} already exists`, errorObj: {}}
+              reject (error);
+
+            } catch(err) {
+              if(!err.statusCode || err.statusCode != 404) {
+                reject(err);
+              }
+            }
+            // checking wther the account exists by phonenumber
+            // if no error (exists) then reject
+            try {
+              const account = await Profile.readByPhoneNumber(profileObj.phonenumber);
+              const error = {statusCode: 409, errorMessage: `Account with phonenumber ${profileObj.phonenumber} already exists`, errorObj: {}}
               reject (error);
 
             } catch(err) {
@@ -186,32 +202,31 @@ class Account {
                   SELECT * FROM jobProfile jp
                   WHERE jp.profileid = SCOPE_IDENTITY()
               `)
-
-            // checking wether we have exactly 1 line inserted
-            if(resultProfile.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
-            console.log(resultProfile.recordset[0]);
-            // inserting into the account table
-            const profileid = resultProfile.recordset[0].profileid;
-            const resultAccount = await pool.request()
+              // checking wether we have exactly 1 line inserted
+              if(resultProfile.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+              // inserting into the account table
+              const profileid = resultProfile.recordset[0].profileid;
+              const resultAccount = await pool.request()
               .input('email', sql.NVarChar(), this.email)
               .input('profileid', sql.Int(), profileid)
               .query(`
-                INSERT INTO jobAccount 
-                  ([email], [FK_profileid])
-                VALUES
-                  (@email, @profileid)
-                SELECT * FROM jobAccount ja
-                WHERE ja.accountid = SCOPE_IDENTITY()
+              INSERT INTO jobAccount 
+              ([email], [FK_profileid])
+              VALUES
+              (@email, @profileid)
+              SELECT * FROM jobAccount ja
+              WHERE ja.accountid = SCOPE_IDENTITY()
               `)
-
-            // checking wether we have exactly 1 line inserted
-            if(resultAccount.recordeet.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
-            
-            // inserting the hashed password into password table
-
-            const hashedpassword = bcrypt.hashSync(password);
-            const accountid = resultAccount.recordset[0].accountid;
-
+              
+              // checking wether we have exactly 1 line inserted
+              if(resultAccount.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+              
+              // inserting the hashed password into password table
+              
+              const hashedpassword = bcrypt.hashSync(password);
+              const accountid = resultAccount.recordset[0].accountid;
+              
+             
             const resultPassword = await pool.request()
               .input('accountid', sql.Int(), accountid)
               .input('hashedpassword', sql.NVarChar(), hashedpassword)
@@ -225,10 +240,10 @@ class Account {
               `)
 
               // checking wether we have exactly 1 line inserted
-            if(resultPassword.recordeet.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
+            if(resultPassword.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into profile table failed', errorObj: {}}
             sql.close();
             
-            const account = await Account.readByEmail(accountObj.email);
+            const account = await Account.readByEmail(this.email);
             resolve(account);
 
           } catch(err) {

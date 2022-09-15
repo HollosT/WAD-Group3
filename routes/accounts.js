@@ -27,8 +27,8 @@ router.post('/', async (req, res) => {
 
         const profileToBeSaved = new Profile(profileWannabe);
         const accountToBeSaved = new Account(accountWannabe);
-        console.log(accountToBeSaved)
         const account = await accountToBeSaved.create(passwordWannabe.password, profileToBeSaved)
+        
         return res.send(JSON.stringify(account));
 
     } catch (err) {
