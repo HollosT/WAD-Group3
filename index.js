@@ -12,6 +12,7 @@ const responseHeader = require('./middleware/responseHeaderJSOn')
 const tasks = require('./routes/tasks')
 const login = require('./routes/login')
 const accounts = require('./routes/accounts')
+const profiles = require('./routes/profiles')
 
 
 app.use(express.json());
@@ -22,6 +23,7 @@ app.use(cors(corsOptions));
 app.use(responseHeader)
 
 app.use('/api/tasks', tasks)
+app.use('/api/profiles', profiles)
 app.use('/api/accounts/login', login)
 app.use('/api/accounts', accounts)
 

@@ -108,8 +108,8 @@ class Account {
             .query(`
                       SELECT *
                       FROM jobAccount a
-                      INNER JOIN jobRole r
-                      ON a.FK_roleid = r.roleid
+                        INNER JOIN jobRole r
+                        ON a.FK_roleid = r.roleid
                       WHERE a.email = @email
                 `)
           if (result.recordset.length == 0) throw { statusCode: 404, errorMessage: `Account not found.`, errorObj: {} }

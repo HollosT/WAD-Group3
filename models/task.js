@@ -179,12 +179,12 @@ class Task {
 
                             category: {
                                 categoryid: record.categoryid,
-                                categoryname: record.categoryname
+                                // categoryname: record.categoryname
                             },
 
                             status: {
                                 statusid: record.statusid,
-                                statusname: record.statusname,
+                                // statusname: record.statusname,
                             }
                             
                             // profileArr: [
@@ -260,28 +260,32 @@ class Task {
 
 
     // Creating task
-    create (category) {
+    create () {
         return new Promise((resolve, reject) => {
             (async () => {
                 try {
+
                     const pool = await sql.connect(con);
                     const result = await pool.request()
                     .input('tasktitle', sql.NVarChar(), this.tasktitle)
-                    .input('taskdescription', sql.NVarChar, this.taskdescription)
-                    .input('taskaddress', sql.NVarChar, this.taskaddress)
+                    .input('taskdescription', sql.NVarChar(), this.taskdescription)
+                    .input('taskaddress', sql.NVarChar(), this.taskaddress)
                     .input('taskpostdate', sql.BigInt(), this.taskpostdate)
                     .input('tasksalary', sql.Int(), this.tasksalary)
-                    .input('accountid', sql.Int(), this.accountArr.accountid)
-                    .input('categoryid', sql.Int(), this.categoryArr.categoryid)
+                    .input('accountid', sql.Int(), this.account.accountid)
+                    .input('categoryid', sql.Int(), this.category.categoryid)
                     .query(`
-                        INSERT INTO jobTask 
-                            ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [tasksalary], [accountid], [categoryid])
-                        VALUES 
-                            (@tasktitle, @taskdescription, @taskaddress, @taskpostdate, @tasksalary, @accountid, @categoryid);
-                        SELECT *
-                        FROM jobTask t
-                        WHERE t.taskid = SCOPE_IDENTITY()
+                    INSERT INTO jobTask 
+                    ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [tasksalary], [FK_accountid], [FK_categoryid])
+                    VALUES 
+                    (@tasktitle, @taskdescription, @taskaddress, @taskpostdate, @tasksalary, @accountid, @categoryid);
+                    SELECT *
+                    FROM jobTask t
+                    WHERE t.taskid = SCOPE_IDENTITY()
                     `)
+                    console.log(result.recordset[0]);
+                    
+                   
                     // two tables - task and category
                     if (result.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT INTO account table is failed', errorObj: {}}
 

@@ -80,7 +80,7 @@ CREATE TABLE jobProfile
     lastname NVARCHAR(50) NOT NULL,
     phonenumber NVARCHAR(50) NOT NULL UNIQUE,
     profiledescription NVARCHAR(255),
-    profilepicture NVARCHAR(MAX)
+    profilepicture NVARCHAR(255)
 )
 GO
 

@@ -12,6 +12,7 @@ class Profile {
         this.phonenumber = profileObj.phonenumber;
         this.profiledescription = profileObj.profiledescription;
         this.profilepicture = profileObj.profilepicture;
+
       }
     
       static validationSchema(){
@@ -31,8 +32,8 @@ class Profile {
             profiledescription: Joi.string()
             .max(255),
             profilepicture: Joi.string()
-            .uri()
             .max(255)
+            .allow(null)
         })
         return schema
       }
@@ -42,8 +43,50 @@ class Profile {
         return schema.validate(profileObj)
       }
 
+      // Getting a specific profile by profileid
+      static readByProfileid(profileid) {
+        return new Promise((resolve, reject) => {
+          (async () => {
+            try{
+              const pool = await sql.connect(con);
+              const result = await pool.request()
+              .input('profileid', sql.Int(), profileid)
+              .query(`
+              SELECT *
+              FROM jobProfile p
+              WHERE p.profileid = @profileid
+              `)
+              
+              
+              if(result.recordset.length > 1) throw {statusCode: 500, errorMessage: `Corrupt DB, multiple account with the profileid: ${profileid}`, errorObj: {}}
+              if(result.recordset.length == 0) throw {statusCode:404, errorMessage:`Account not found with profileid:${profileid}`, errorOb: {}}
+          
+              const firstResult = result.recordset[0];
+              const profileWannabe = {
+                profileid: firstResult.profileid,
+                firstname: firstResult.firstname,
+                lastname: firstResult.lastname,
+                phonenumber: firstResult.phonenumber,
+                profiledescription: firstResult.profiledescription,
+                profilepicture: firstResult.profilepicture
+              }
+              
+              
+             const {error} = Profile.validate(profileWannabe);
+             
+             if(error) throw {statusCode: 500, errorMessage: `Corrupt DB, profile does not validate: ${profileWannabe.profileid}`, errorObj: error}
+                resolve(new Profile(profileWannabe))
+            }catch(err) {
+              reject(err)
+            }
+            sql.close()
+          })()
+        })
+      }
+
       // Getting the profile by phonenumber
       static readByPhoneNumber(phoneNumber) {
+       
         return new Promise((resolve, reject) => {
           (async () => {
             try{
@@ -66,11 +109,11 @@ class Profile {
                 phonenumber: firstResult.phonenumber,
                 firstname: firstResult.firstname,
                 lastname: firstResult.lastname
+
               }
 
               const {error} = Profile.validate(almostProfile);
               if (error) throw {statusCode: 500, errorMessage: `Corrupt account information in the database, accountid: ${almostAccount.accountid}`, errorObj: error}
-
               resolve(new Profile(almostProfile))
             }catch(err) {
               reject(err)

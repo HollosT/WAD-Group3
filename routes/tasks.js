@@ -75,9 +75,8 @@ router.post("/", [autheticate], async (req, res) => {
       };
       
       const taskToBeSaved = new Task(req.body);
-      console.log(taskToBeSaved);
     const task = await taskToBeSaved.create();
-    res.send(JSON.stringify({message: "updated"}));
+    res.send(JSON.stringify(task));
   } catch (err) {
     if (err.statusCode)
       return res.status(err.statusCode).send(JSON.stringify(err));
