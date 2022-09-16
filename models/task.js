@@ -20,10 +20,39 @@ class Task {
         this.taskdescription = taskObj.taskdescription;
         this.taskaddress = taskObj.taskaddress;
         this.taskpostdate = taskObj.taskpostdate;
-        this.profileArr = _.cloneDeep(taskObj.profileArr);
-        this.accountArr = _.cloneDeep(taskObj.accountArr);
-        this.statusArr = _.cloneDeep(taskObj.statusArr);
-        this.categoryArr = _.cloneDeep(taskObj.categoryArr);
+        this.tasksalary = taskObj.tasksalary;
+        if (taskObj.profile) {
+            this.profile = {
+                profileid: taskObj.profile.profileid,
+                firstname: taskObj.profile.firstname,
+                lastname: taskObj.profile.lastname,
+                phonenumber: taskObj.profile.phonenumber
+            }
+        }
+        if (taskObj.account) {
+            this.account = {
+                accountid: taskObj.account.accountid
+            }
+        }
+
+        if (taskObj.category) {
+            this.category = {
+                categoryid: taskObj.category.categoryid,
+                categoryname: taskObj.category.categoryname
+            }
+        }
+
+        if (taskObj.status) {
+            this.status = {
+                statusid: taskObj.status.statusid,
+                statusname: taskObj.status.statusname
+            }
+        }
+
+    
+        // this.accountArr = _.cloneDeep(taskObj.accountArr);
+        // this.statusArr = _.cloneDeep(taskObj.statusArr);
+        // this.categoryArr = _.cloneDeep(taskObj.categoryArr);
     }
   
     static validationSchema() {
@@ -43,10 +72,51 @@ class Task {
             taskpostdate: Joi.number()
                 .integer()
                 .required(),
-            profileArr: Joi.array().items(Profile.validationSchema()),
-            accountArr: Joi.array().items(Account.validationSchema()),
-            statusArr: Joi.array().items(Status.validationSchema()),
-            categoryArr: Joi.array().items(Category.validationSchema()),
+            tasksalary: Joi.number()
+                .integer()
+                .required(),
+
+            profile: Joi.object({
+                profileid: Joi.number()
+                    .integer()
+                    .min(1)
+                    .required(),
+                firstname: Joi.string()
+                    .required(),
+                lastname: Joi.string()
+                    .required(),
+                phonenumber: Joi.string()
+                    .required()
+                    .max(255)
+            }),
+
+            account: Joi.object({
+                accountid: Joi.number()
+                    .integer()
+                    .required()
+                    .min(1)
+            }),
+
+            status: Joi.object({
+                statusid: Joi.number()
+                    .integer()
+                    .required()
+                    .min(1),
+                statusname: Joi.string()
+            }),
+
+            category: Joi.object({
+                categoryid: Joi.number()
+                    .integer()
+                    .required()
+                    .min(1),
+                categoryname: Joi.string()
+            })
+
+            // profileArr: Joi.array().items(Profile.validationSchema()),
+            // accountArr: Joi.array().items(Account.validationSchema()),
+            // statusArr: Joi.array().items(Status.validationSchema()),
+            // categoryArr: Joi.array().items(Category.validationSchema()),
         })
         
         return schema;
@@ -96,32 +166,53 @@ class Task {
                             taskdescription: record.taskdescription,
                             taskaddress: record.taskaddress,
                             taskpostdate: record.taskpostdate,
-                            profileArr: [
-                                {
-                                    profileid: record.profileid,
-                                    firstname: record.firstname,
-                                    lastname: record.lastname,
-                                    phonenumber: record.phonenumber
-                                }
-                            ],
-                            accountArr: [
-                                {
-                                    accountid: record.accountid,
-                                    email: record.email
-                                }
-                            ],
-                            statusArr: [
-                                {
-                                    statusid: record.statusid,
-                                    statusname: record.statusname,
-                                }
-                            ],
-                            categoryArr: [
-                                {
-                                    categoryid: record.categoryid,
-                                    categoryname: record.categoryname,
-                                }
-                            ]
+                            tasksalary: record.tasksalary,
+                            profile: {
+                                profileid: record.profileid,
+                                firstname: record.firstname,
+                                lastname: record.lastname,
+                                phonenumber: record.phonenumber
+                            },
+                            account: {
+                                accountid: record.accountid
+                            },
+
+                            category: {
+                                categoryid: record.categoryid,
+                                categoryname: record.categoryname
+                            },
+
+                            status: {
+                                statusid: record.statusid,
+                                statusname: record.statusname,
+                            }
+                            
+                            // profileArr: [
+                            //     {
+                            //         profileid: record.profileid,
+                            //         firstname: record.firstname,
+                            //         lastname: record.lastname,
+                            //         phonenumber: record.phonenumber
+                            //     }
+                            // ],
+                            // accountArr: [
+                            //     {
+                            //         accountid: record.accountid,
+                            //         email: record.email
+                            //     }
+                            // ],
+                            // statusArr: [
+                            //     {
+                            //         statusid: record.statusid,
+                            //         statusname: record.statusname,
+                            //     }
+                            // ],
+                            // categoryArr: [
+                            //     {
+                            //         categoryid: record.categoryid,
+                            //         categoryname: record.categoryname,
+                            //     }
+                            // ]
                         }
                         tasksCollection.push(newTask)
                     });
@@ -153,20 +244,58 @@ class Task {
         })
     }
 
-    static readCategory() {
-        return new Promise((resolve, reject) => {
-            (async () => {
-                try {
+    // static readCategory() {
+    //     return new Promise((resolve, reject) => {
+    //         (async () => {
+    //             try {
 
-                } catch (err) {
+    //             } catch (err) {
 
-                }
-            })();
-        })
-    }
+    //             }
+    //         })();
+    //     })
+    // }
     // queries 
     // after opening the database join task table and catrgory table
 
+
+    // Creating task
+    create (category) {
+        return new Promise((resolve, reject) => {
+            (async () => {
+                try {
+                    const pool = await sql.connect(con);
+                    const result = await pool.request()
+                    .input('tasktitle', sql.NVarChar(), this.tasktitle)
+                    .input('taskdescription', sql.NVarChar, this.taskdescription)
+                    .input('taskaddress', sql.NVarChar, this.taskaddress)
+                    .input('taskpostdate', sql.BigInt(), this.taskpostdate)
+                    .input('tasksalary', sql.Int(), this.tasksalary)
+                    .input('accountid', sql.Int(), this.accountArr.accountid)
+                    .input('categoryid', sql.Int(), this.categoryArr.categoryid)
+                    .query(`
+                        INSERT INTO jobTask 
+                            ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [tasksalary], [accountid], [categoryid])
+                        VALUES 
+                            (@tasktitle, @taskdescription, @taskaddress, @taskpostdate, @tasksalary, @accountid, @categoryid);
+                        SELECT *
+                        FROM jobTask t
+                        WHERE t.taskid = SCOPE_IDENTITY()
+                    `)
+                    // two tables - task and category
+                    if (result.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT INTO account table is failed', errorObj: {}}
+
+                    const task = await result.recordset[0]
+                    resolve(task)
+
+                } catch (err) {
+                    reject(err)
+                }
+                sql.close();
+            })();
+        })
+
+    }
 }
 
 module.exports = Task;

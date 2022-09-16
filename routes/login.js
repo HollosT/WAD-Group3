@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 
         // attach the token to the response header
         res.header('x-authentication-token', token);
-        console.log(token);
+        // console.log(token);
 
         return res.send(JSON.stringify(account));
     }catch(err) {
