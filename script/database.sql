@@ -166,8 +166,8 @@ GO
 INSERT INTO jobTask
     ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [tasksalary], [FK_accountid], [FK_categoryid], [FK_statusid])
     VALUES
-    ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', 20220831, 100, 1, 1, 1),
-    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', 20220901, 120, 2, 2, 2)
+    ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', 1662854400000, 100, 1, 1, 1),
+    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', 1663459200000, 120, 2, 2, 2)
 GO
 
 INSERT INTO jobPassword 

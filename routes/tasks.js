@@ -20,7 +20,6 @@ router.get("/", async (req, res) => {
     // if we have query parameters
     if (taskSets.length > 0) {
       const allTasks = await Task.readAll();
-      console.log(allTasks);
 
       allTasks.forEach((singleTask) => {
         for (let i = 0; i < taskSets.length; i++) {
@@ -54,15 +53,16 @@ router.get("/", async (req, res) => {
       if (taskSets.length == 1) {
         tasks = Array.from(taskSets[0]);
       }
-      res.send(JSON.stringify(tasks));
+     return res.send(JSON.stringify(tasks));
     }
 
     // all tasks
     const allTasks = await Task.readAll();
-    res.send(JSON.stringify(allTasks));
+    return res.send(JSON.stringify(allTasks));
   } catch (err) {
-    if (err.statusCode)
+    if (err.statusCode){
       return res.status(err.statusCode).send(JSON.stringify(err));
+    }
     // return res.status(500).send(JSON.stringify(err)); !!!!! Chrashes nodemon
   }
 });
