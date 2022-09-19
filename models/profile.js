@@ -2,6 +2,7 @@ const Joi = require("joi");
 const sql = require("mssql");
 
 const config = require("config");
+const { allow } = require("joi");
 const con = config.get("dbConfig_UCN");
 
 class Profile {
@@ -30,7 +31,8 @@ class Profile {
             .integer()
             .required(),
             profiledescription: Joi.string()
-            .max(255),
+            .max(255)
+            .allow(null),
             profilepicture: Joi.string()
             .max(255)
             .allow(null)
