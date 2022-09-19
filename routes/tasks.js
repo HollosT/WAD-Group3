@@ -16,17 +16,20 @@ router.get("/", async (req, res) => {
     Object.keys(req.query).forEach((key) => {
       taskSets.push(new Set());
     });
-
+    
     // if we have query parameters
     if (taskSets.length > 0) {
       const allTasks = await Task.readAll();
+      console.log(allTasks);
 
       allTasks.forEach((singleTask) => {
         for (let i = 0; i < taskSets.length; i++) {
+          
           switch (Object.values(req.query)[i]) {
             case "outdoor":
+              console.log('hello');
               if (
-                singleTask.categoryArr[0].categoryname.includes(
+                singleTask.category.categoryname.includes(
                   req.query.categoryname
                 )
               ) {
@@ -35,7 +38,7 @@ router.get("/", async (req, res) => {
               break;
             case "indoor":
               if (
-                singleTask.categoryArr[0].categoryname.includes(
+                singleTask.category.categoryname.includes(
                   req.query.categoryname
                 )
               ) {

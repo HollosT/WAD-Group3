@@ -179,12 +179,12 @@ class Task {
 
                             category: {
                                 categoryid: record.categoryid,
-                                // categoryname: record.categoryname
+                                categoryname: record.categoryname
                             },
 
                             status: {
                                 statusid: record.statusid,
-                                // statusname: record.statusname,
+                                statusname: record.statusname,
                             }
                             
                             // profileArr: [
@@ -283,8 +283,7 @@ class Task {
                     FROM jobTask t
                     WHERE t.taskid = SCOPE_IDENTITY()
                     `)
-                    console.log(result.recordset[0]);
-                    
+                
                    
                     // two tables - task and category
                     if (result.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT INTO account table is failed', errorObj: {}}
