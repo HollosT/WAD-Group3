@@ -146,6 +146,7 @@ class Account {
   // creating a password method
 
   create(password, profileObj) {
+    // console.log('h')
     return new Promise((resolve, reject) => {
       (async () => {
           try {
