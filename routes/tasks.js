@@ -54,16 +54,18 @@ router.get("/", async (req, res) => {
         tasks = Array.from(taskSets[0]);
       }
      return res.send(JSON.stringify(tasks));
+    } else {
+
+      // all tasks
+      const allTasks = await Task.readAll();
+      return res.send(JSON.stringify(allTasks));
     }
 
-    // all tasks
-    const allTasks = await Task.readAll();
-    return res.send(JSON.stringify(allTasks));
   } catch (err) {
     if (err.statusCode){
       return res.status(err.statusCode).send(JSON.stringify(err));
     }
-    // return res.status(500).send(JSON.stringify(err)); !!!!! Chrashes nodemon
+    return res.status(500).send(JSON.stringify(err)); // !!!!! Chrashes nodemon
   }
 });
 

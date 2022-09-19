@@ -2,7 +2,6 @@ const Joi = require("joi");
 const sql = require("mssql");
 
 const config = require("config");
-const { allow } = require("joi");
 const con = config.get("dbConfig_UCN");
 
 class Profile {

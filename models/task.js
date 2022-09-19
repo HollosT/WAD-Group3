@@ -230,7 +230,6 @@ class Task {
                                 errorObj: error,
                             };
 
-
                         tasks.push(new Task(task));
                     })
 
