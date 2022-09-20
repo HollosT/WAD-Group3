@@ -16,17 +16,16 @@ router.get("/", async (req, res) => {
     Object.keys(req.query).forEach((key) => {
       taskSets.push(new Set());
     });
-    
+
     // if we have query parameters
     if (taskSets.length > 0) {
       const allTasks = await Task.readAll();
 
       allTasks.forEach((singleTask) => {
         for (let i = 0; i < taskSets.length; i++) {
-          
           switch (Object.values(req.query)[i]) {
             case "outdoor":
-              console.log('hello');
+              console.log("hello");
               if (
                 singleTask.category.categoryname.includes(
                   req.query.categoryname
@@ -53,16 +52,14 @@ router.get("/", async (req, res) => {
       if (taskSets.length == 1) {
         tasks = Array.from(taskSets[0]);
       }
-     return res.send(JSON.stringify(tasks));
+      return res.send(JSON.stringify(tasks));
     } else {
-
       // all tasks
       const allTasks = await Task.readAll();
       return res.send(JSON.stringify(allTasks));
     }
-
   } catch (err) {
-    if (err.statusCode){
+    if (err.statusCode) {
       return res.status(err.statusCode).send(JSON.stringify(err));
     }
     return res.status(500).send(JSON.stringify(err)); // !!!!! Chrashes nodemon
@@ -78,8 +75,8 @@ router.post("/", [autheticate], async (req, res) => {
         errorMessage: `Badly formatted request`,
         errorObj: error,
       };
-      
-      const taskToBeSaved = new Task(req.body);
+
+    const taskToBeSaved = new Task(req.body);
     const task = await taskToBeSaved.create();
     res.send(JSON.stringify(task));
   } catch (err) {
@@ -87,5 +84,20 @@ router.post("/", [autheticate], async (req, res) => {
       return res.status(err.statusCode).send(JSON.stringify(err));
   }
 });
+
+//get all the task for specific profile
+router.get("/own", [autheticate], async (req, res) => {
+  try {
+    const accountid = req.body.account.accountid;
+    const tasks = Task.readTasksByAccountId(accountid);
+    console.log(tasks);
+    res.send(JSON.stringify(tasks));
+  } catch (err) {
+    if (err.statusCode)
+      return res.status(err.statusCode).send(JSON.stringify(err));
+  }
+});
+
+
 
 module.exports = router;
