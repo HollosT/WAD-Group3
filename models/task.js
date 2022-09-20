@@ -156,33 +156,6 @@ class Task {
                 statusid: record.statusid,
                 statusname: record.statusname,
               },
-
-              // profileArr: [
-              //     {
-              //         profileid: record.profileid,
-              //         firstname: record.firstname,
-              //         lastname: record.lastname,
-              //         phonenumber: record.phonenumber
-              //     }
-              // ],
-              // accountArr: [
-              //     {
-              //         accountid: record.accountid,
-              //         email: record.email
-              //     }
-              // ],
-              // statusArr: [
-              //     {
-              //         statusid: record.statusid,
-              //         statusname: record.statusname,
-              //     }
-              // ],
-              // categoryArr: [
-              //     {
-              //         categoryid: record.categoryid,
-              //         categoryname: record.categoryname,
-              //     }
-              // ]
             };
             tasksCollection.push(newTask);
           });
@@ -397,7 +370,40 @@ class Task {
 
 
   updateTask() {
-    ret
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try{
+          let tmpResult;
+
+          tmpResult = await Task.readByTaskId(this.taskid)
+
+          const pool = await sql.connect(con);
+          console.log('test');
+
+          tmpResult = await pool.request()
+            .input('taskid', sql.Int(), this.taskid)
+            .input('tasktitle', sql.NVarChar(), this.tasktitle)
+            .input('taskdescription', sql.NVarChar(), this.taskdescription)
+            .input('taskaddress', sql.NVarChar(), this.taskaddress)
+            .input('taskpostdate', sql.BigInt(), this.taskpostdate)
+            .input('tasksalary', sql.Int(), this.tasksalary)
+            .input('categoryid', sql.Int(), this.category.categoryid)
+            .input('statusid', sql.Int(), this.status.statusid)
+            .query(`
+                UPDATE jobTask
+                SET tasktitle = @tasktitle, taskdescription = @taskdescription, taskaddress = @taskaddress, taskpostdate = @taskpostdate, tasksalary = @tasksalary, FK_categoryid = @categoryid, Fk_statusid = @statusid
+                WHERE taskid = @taskid
+            `)
+            sql.close()
+
+            const task = await Task.readByTaskId(this.taskid)
+            resolve(task)
+
+        }catch(err){
+            reject(err)
+        }
+      })();
+    })
   }
 }
 

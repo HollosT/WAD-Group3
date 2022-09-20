@@ -110,8 +110,9 @@ router.put('/:taskid', [autheticate], async (req, res) => {
         .required()
     })
     const taskById = await Task.readByTaskId(req.params.taskid);
+    
 
-    if(taskById.account.accountid != req.headers.accountid) throw { statusCode: 403, errorMessage: `Cannot update task with name: ${taskByTaskid.account.accountid }`, errorObj: {} }
+    if(taskById.account.accountid != req.account.accountid) throw { statusCode: 403, errorMessage: `Cannot update task with name: ${taskByTaskid.account.accountid }`, errorObj: {} }
 
 
     if(req.body.tasktitle) {
@@ -130,16 +131,14 @@ router.put('/:taskid', [autheticate], async (req, res) => {
       taskById.tasksalary = req.body.tasksalary
     } 
 
-    if(req.body.status){
-      if(req.body.status.statusid) {
+    if(req.body.status &&req.body.status.statusid ){
+
         taskById.status.statusid = req.body.status.statusid
-      } 
     }
 
-    if(req.body.category){
-      if(req.body.category.categorid) {
+    if(req.body.category && req.body.category.categorid){
         taskById.category.categorid = req.body.category.categorid
-        } 
+
     }
 
     // validate updateWannabe
