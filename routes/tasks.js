@@ -8,6 +8,8 @@ const Task = require("../models/task");
 const Category = require("../models/category");
 const Status = require("../models/status");
 
+
+
 // Get all the tasks
 router.get("/", async (req, res) => {
   try {
@@ -66,6 +68,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+
 router.post("/", [autheticate], async (req, res) => {
   try {
     const { error } = Task.validate(req.body);
@@ -89,7 +92,7 @@ router.post("/", [autheticate], async (req, res) => {
 router.get("/own", [autheticate], async (req, res) => {
   try {
     const accountid = req.body.account.accountid;
-    const tasks = Task.readTasksByAccountId(accountid);
+    const tasks = await Task.readTasksByAccountId(accountid);
     console.log(tasks);
     res.send(JSON.stringify(tasks));
   } catch (err) {
@@ -97,6 +100,7 @@ router.get("/own", [autheticate], async (req, res) => {
       return res.status(err.statusCode).send(JSON.stringify(err));
   }
 });
+
 
 
 

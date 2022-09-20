@@ -22,7 +22,6 @@ app.use(cors(corsOptions));
 app.use(responseHeader);
 
 // app.use("/api/tasks/own/taskid", tasks);
-// app.use("/api/tasks/own", tasks);
 app.use("/api/tasks", tasks);
 app.use("/api/profiles", profiles);
 app.use("/api/accounts/login", login);

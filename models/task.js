@@ -338,7 +338,7 @@ class Task {
 
             tasks.push(new Task(task));
           });
-          console.log(tasks);
+
           resolve(tasks);
 
         } catch (err) {
