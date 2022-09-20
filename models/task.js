@@ -211,19 +211,64 @@ class Task {
     });
   }
 
-  // static readCategory() {
-  //     return new Promise((resolve, reject) => {
-  //         (async () => {
-  //             try {
+  // getting task by taskid
 
-  //             } catch (err) {
+  static readByTaskId(taskid) {
+    return new Promise((resolve, reject) => {
+      (async ()=> {
+        try{
+          const pool = await sql.connect(con)
+          const result = await pool.request()
+            .input('taskid', sql.Int(), taskid)
+            .query(`
+                    SELECT * 
+                    FROM jobTask t
+                        INNER JOIN jobAccount a 
+                        ON t.FK_accountid = a.accountid
+                            INNER JOIN jobStatus s
+                            ON t.FK_statusid = s.statusid
+                            INNER JOIN jobCategory c
+                            ON t.FK_categoryid = c.categoryid        
+                    WHERE t.taskid = @taskid
+                    ORDER BY t.taskid
+            `)
+ 
+           if (result.recordset.length > 1) throw { statusCode: 500, errorMessage: `Corrupt DB, mulitple tasks with taskid: ${taskid}`, errorObj: {} };
+           if (result.recordset.length == 0) throw { statusCode: 404, errorMessage: `Author not found by taksid: ${taskid}`, errorObj: {} };
 
-  //             }
-  //         })();
-  //     })
-  // }
-  // queries
-  // after opening the database join task table and catrgory table
+           const taskWannabe = {
+                taskid: result.recordset[0].taskid,
+                tasktitle: result.recordset[0].tasktitle,
+                taskdescription: result.recordset[0].taskdescription,
+                taskaddress: result.recordset[0].taskaddress,
+                taskpostdate: result.recordset[0].taskpostdate,
+                tasksalary: result.recordset[0].tasksalary,
+                account: {
+                  accountid: result.recordset[0].accountid,
+                },
+
+                category: {
+                  categoryid: result.recordset[0].categoryid,
+                  categoryname: result.recordset[0].categoryname,
+                },
+
+                status: {
+                  statusid: result.recordset[0].statusid,
+                  statusname: result.recordset[0].statusname,
+                },
+           }
+
+           const { error } = Task.validate(taskWannabe);
+           if (error) throw { statusCode: 500, errorMessage: `Corrupt DB, task does not validate: ${taskWannabe.taskid}`, errorObj: error };
+
+           resolve(new Task(taskWannabe))
+
+        }catch(err) {
+          reject(err)
+        }
+      })();
+    })
+  }
 
   // Creating task
   create() {
@@ -350,93 +395,10 @@ class Task {
     });
   }
 
-//   static readByTaskId (taskid) {
-//     return new Promise
-//   }
 
-
-//   static updateTask(taskid) {
-//     return new Promise((resolve, reject) => {
-//         (async () => {
-//           try {
-//             const pool = await sql.connect(con);
-//             const result = await pool
-//               .request()
-//               .input("taskid", sql.Int(), taskid).query(`
-//                           SELECT * 
-//                           FROM jobTask t
-//                               INNER JOIN jobAccount a 
-//                               ON t.FK_accountid = a.accountid
-//                                   INNER JOIN jobProfile p
-//                                   ON a.FK_profileid = p.profileid
-//                               INNER JOIN jobStatus s
-//                               ON t.FK_statusid = s.statusid
-//                               INNER JOIN jobCategory c
-//                               ON t.FK_categoryid = c.categoryid   
-//                                   WHERE t.FK_accountid = @accountid     
-  
-//                           ORDER BY t.taskid 
-//                           `);
-  
-//             const tasksCollection = [];
-//             result.recordset.forEach((record) => {
-//               const newTask = {
-//                 taskid: record.taskid,
-//                 tasktitle: record.tasktitle,
-//                 taskdescription: record.taskdescription,
-//                 taskaddress: record.taskaddress,
-//                 taskpostdate: record.taskpostdate,
-//                 tasksalary: record.tasksalary,
-//                 profile: {
-//                   profileid: record.profileid,
-//                   firstname: record.firstname,
-//                   lastname: record.lastname,
-//                   phonenumber: record.phonenumber,
-//                 },
-//                 account: {
-//                   accountid: record.accountid,
-//                 },
-  
-//                 category: {
-//                   categoryid: record.categoryid,
-//                   categoryname: record.categoryname,
-//                 },
-  
-//                 status: {
-//                   statusid: record.statusid,
-//                   statusname: record.statusname,
-//                 },
-//               };
-//               tasksCollection.push(newTask);
-  
-              
-//             });
-  
-//             // validation
-//             const tasks = [];
-//             tasksCollection.forEach((task) => {
-//               const { error } = Task.validate(task);
-  
-//               if (error)
-//                 throw {
-//                   statusCode: 500,
-//                   errorMessage: `Corrupt task information in the database, taskid: ${task.taskid}`,
-//                   errorObj: error,
-//                 };
-  
-//               tasks.push(new Task(task));
-//             });
-  
-//             resolve(tasks);
-  
-//           } catch (err) {
-//             reject(err);
-//           }
-  
-//           sql.close();
-//         })();
-//       });
-//   }
+  updateTask() {
+    ret
+  }
 }
 
 module.exports = Task;

@@ -8,9 +8,5 @@ GO
 -- GO
 
 SELECT *
-FROM jobTask t 
-INNER JOIN jobAccount ac
-ON t.FK_accountid = ac.accountid
-    INNER JOIN jobProfile p
-    ON ac.FK_profileid = p.profileid
+FROM jobTask 
 GO

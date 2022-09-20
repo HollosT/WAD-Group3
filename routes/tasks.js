@@ -106,10 +106,56 @@ router.put('/:taskid', [autheticate], async (req, res) => {
     const schema = Joi.object({
        taskid: Joi.number()
         .integer()
-        
+        .min(1)
+        .required()
     })
-  } catch (err) {
+    const taskById = await Task.readByTaskId(req.params.taskid);
 
+    if(taskById.account.accountid != req.headers.accountid) throw { statusCode: 403, errorMessage: `Cannot update task with name: ${taskByTaskid.account.accountid }`, errorObj: {} }
+
+
+    if(req.body.tasktitle) {
+      taskById.tasktitle = req.body.tasktitle
+    } 
+    if(req.body.taskdescription) {
+      taskById.taskdescription = req.body.taskdescription
+    } 
+    if(req.body.taskaddress) {
+      taskById.taskaddress = req.body.taskaddress
+    } 
+    if(req.body.taskpostdate) {
+      taskById.taskpostdate = req.body.taskpostdate
+    } 
+    if(req.body.tasksalary) {
+      taskById.tasksalary = req.body.tasksalary
+    } 
+
+    if(req.body.status){
+      if(req.body.status.statusid) {
+        taskById.status.statusid = req.body.status.statusid
+      } 
+    }
+
+    if(req.body.category){
+      if(req.body.category.categorid) {
+        taskById.category.categorid = req.body.category.categorid
+        } 
+    }
+
+    // validate updateWannabe
+    validationResult = Task.validate(taskById);
+    if (validationResult.error) throw { statusCode: 400, errorMessage: `Badly formatted request`, errorObj: validationResult.error }
+
+    const task = await taskById.updateTask()
+
+    return res.send(JSON.stringify(task));
+
+
+  } catch (err) {
+    if (err.statusCode) { 
+      return res.status(err.statusCode).send(JSON.stringify(err));
+      }
+      return res.status(500).send(JSON.stringify(err));  
   }
 })
 
