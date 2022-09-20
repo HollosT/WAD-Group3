@@ -350,10 +350,93 @@ class Task {
     });
   }
 
+//   static readByTaskId (taskid) {
+//     return new Promise
+//   }
 
-  static updateTask(task) {
-    
-  }
+
+//   static updateTask(taskid) {
+//     return new Promise((resolve, reject) => {
+//         (async () => {
+//           try {
+//             const pool = await sql.connect(con);
+//             const result = await pool
+//               .request()
+//               .input("taskid", sql.Int(), taskid).query(`
+//                           SELECT * 
+//                           FROM jobTask t
+//                               INNER JOIN jobAccount a 
+//                               ON t.FK_accountid = a.accountid
+//                                   INNER JOIN jobProfile p
+//                                   ON a.FK_profileid = p.profileid
+//                               INNER JOIN jobStatus s
+//                               ON t.FK_statusid = s.statusid
+//                               INNER JOIN jobCategory c
+//                               ON t.FK_categoryid = c.categoryid   
+//                                   WHERE t.FK_accountid = @accountid     
+  
+//                           ORDER BY t.taskid 
+//                           `);
+  
+//             const tasksCollection = [];
+//             result.recordset.forEach((record) => {
+//               const newTask = {
+//                 taskid: record.taskid,
+//                 tasktitle: record.tasktitle,
+//                 taskdescription: record.taskdescription,
+//                 taskaddress: record.taskaddress,
+//                 taskpostdate: record.taskpostdate,
+//                 tasksalary: record.tasksalary,
+//                 profile: {
+//                   profileid: record.profileid,
+//                   firstname: record.firstname,
+//                   lastname: record.lastname,
+//                   phonenumber: record.phonenumber,
+//                 },
+//                 account: {
+//                   accountid: record.accountid,
+//                 },
+  
+//                 category: {
+//                   categoryid: record.categoryid,
+//                   categoryname: record.categoryname,
+//                 },
+  
+//                 status: {
+//                   statusid: record.statusid,
+//                   statusname: record.statusname,
+//                 },
+//               };
+//               tasksCollection.push(newTask);
+  
+              
+//             });
+  
+//             // validation
+//             const tasks = [];
+//             tasksCollection.forEach((task) => {
+//               const { error } = Task.validate(task);
+  
+//               if (error)
+//                 throw {
+//                   statusCode: 500,
+//                   errorMessage: `Corrupt task information in the database, taskid: ${task.taskid}`,
+//                   errorObj: error,
+//                 };
+  
+//               tasks.push(new Task(task));
+//             });
+  
+//             resolve(tasks);
+  
+//           } catch (err) {
+//             reject(err);
+//           }
+  
+//           sql.close();
+//         })();
+//       });
+//   }
 }
 
 module.exports = Task;

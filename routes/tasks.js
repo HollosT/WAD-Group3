@@ -1,4 +1,5 @@
 const express = require("express");
+const Joi = require("joi");
 const { object } = require("joi");
 const autheticate = require("../middleware/autheticate");
 const router = express.Router();
@@ -27,7 +28,6 @@ router.get("/", async (req, res) => {
         for (let i = 0; i < taskSets.length; i++) {
           switch (Object.values(req.query)[i]) {
             case "outdoor":
-              console.log("hello");
               if (
                 singleTask.category.categoryname.includes(
                   req.query.categoryname
@@ -100,6 +100,19 @@ router.get("/own", [autheticate], async (req, res) => {
       return res.status(err.statusCode).send(JSON.stringify(err));
   }
 });
+
+router.put('/:taskid', [autheticate], async (req, res) => {
+  try {
+    const schema = Joi.object({
+       taskid: Joi.number()
+        .integer()
+        
+    })
+  } catch (err) {
+
+  }
+})
+
 
 
 
