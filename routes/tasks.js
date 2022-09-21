@@ -91,7 +91,7 @@ router.post("/", [autheticate], async (req, res) => {
 //get all the task for specific profile
 router.get("/own", [autheticate], async (req, res) => {
   try {
-    const accountid = req.body.account.accountid;
+    const accountid = req.account.accountid;
     const tasks = await Task.readTasksByAccountId(accountid);
     console.log(tasks);
     res.send(JSON.stringify(tasks));
