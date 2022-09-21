@@ -93,7 +93,6 @@ router.get("/own", [autheticate], async (req, res) => {
   try {
     const accountid = req.account.accountid;
     const tasks = await Task.readTasksByAccountId(accountid);
-    console.log(tasks);
     res.send(JSON.stringify(tasks));
   } catch (err) {
     if (err.statusCode)
@@ -139,13 +138,12 @@ router.put('/:taskid', [autheticate], async (req, res) => {
 
     let validationResult = schema.validate(req.params);
     if (validationResult.error) throw { statusCode: 400, errorMessage: `Badly formatted request`, errorObj: validationResult.error }
-
-
+    
     const taskById = await Task.readByTaskId(req.params.taskid);
     
-
+    
     if(taskById.account.accountid != req.account.accountid) throw { statusCode: 403, errorMessage: `Cannot update task with name: ${taskByTaskid.account.accountid }`, errorObj: {} }
-
+    
 
     if(req.body.tasktitle) {
       taskById.tasktitle = req.body.tasktitle
@@ -163,7 +161,7 @@ router.put('/:taskid', [autheticate], async (req, res) => {
       taskById.tasksalary = req.body.tasksalary
     } 
 
-    if(req.body.status &&req.body.status.statusid ){
+    if(req.body.status && req.body.status.statusid ){
 
         taskById.status.statusid = req.body.status.statusid
     }
@@ -172,6 +170,7 @@ router.put('/:taskid', [autheticate], async (req, res) => {
         taskById.category.categorid = req.body.category.categorid
 
     }
+
 
     // validate updateWannabe
     validationResult = Task.validate(taskById);

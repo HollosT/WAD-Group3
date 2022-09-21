@@ -167,7 +167,12 @@ INSERT INTO jobTask
     ([tasktitle], [taskdescription], [taskaddress], [taskpostdate], [tasksalary], [FK_accountid], [FK_categoryid], [FK_statusid])
     VALUES
     ('babysitter', 'Help with the child on the 08th of September in 2022', 'Aalborg, 9000, Nytorv 1.', 1662854400000, 100, 1, 1, 1),
-    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', 1663459200000, 120, 2, 2, 2)
+    ('digging', 'Dig a hole in my backyard on this Weekend.', 'Aalborg, 9300, Vesterbro 4.', 1663459200000, 120, 2, 2, 2),
+    ('Car washing', 'Wash my car Tomorrow', 'Aarhus, 9300, Vesterbro 4.', 1664748000000, 200, 1, 2, 1),
+    ('Painting the wall', 'I need help to paint my wall on the frist weekend of August.', 'Riga, Main street 2.', 1658700000000, 60, 1, 2, 2),
+    ('Fixing my bike', 'I have a flat tyre! Need help ASAP!', 'Szeged, Lövölde út 153.', 1663711200000, 120, 2, 2, 1),
+    ('Mown my backyard', 'I need someone to mown my backyard', 'Aalborg, Hobrovej 9400', 1664775200000, 125, 2, 1, 1),
+    ('Washing my Range Rover', 'My car is very dirty, can you clean it until Tuesday?', 'Aalborg, Norresundby', 1664775200000, 254,  2, 1, 2)
 GO
 
 INSERT INTO jobPassword 

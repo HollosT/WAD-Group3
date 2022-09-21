@@ -378,7 +378,6 @@ class Task {
           tmpResult = await Task.readByTaskId(this.taskid)
 
           const pool = await sql.connect(con);
-          console.log('test');
 
           tmpResult = await pool.request()
             .input('taskid', sql.Int(), this.taskid)
