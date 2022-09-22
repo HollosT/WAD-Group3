@@ -7,6 +7,14 @@ GO
 --     ON p.profileid = a.FK_profileid
 -- GO
 
-SELECT *
-FROM jobTask 
-GO
+-- SELECT *
+-- FROM jobRole
+-- GO
+
+-- SELECT * FROM jobAccount ja
+-- INNER JOIN jobRole jr
+-- ON ja.FK_roleid = jr.roleid
+
+-- GO
+
+SELECT * FROM jobTask

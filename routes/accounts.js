@@ -5,6 +5,7 @@ const Account = require('../models/account');
 const Profile = require('../models/profile');
 const Joi = require('joi');
 
+
 // POST /api/accounts
     // signing up
 router.post('/', async (req, res) => {

@@ -157,10 +157,10 @@ INSERT INTO jobProfile
 GO
 
 INSERT INTO jobAccount 
-    ([email], [FK_profileid])
+    ([email], [FK_profileid], [FK_roleid])
     VALUES 
-    ('ralala@gmail.com', 1),
-    ('blue@gmail.com', 2)
+    ('ralala@gmail.com', 1, 1),
+    ('blue@gmail.com', 2, 2)
 GO
 
 INSERT INTO jobTask

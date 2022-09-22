@@ -404,6 +404,30 @@ class Task {
       })();
     })
   }
+
+  deleteTask() {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          const task = await Task.readByTaskId(this.taskid);
+          const pool = await sql.connect(con);
+
+          let result;
+          result = await pool.request()
+            .input('taskid', sql.Int(), this.taskid)
+            .query(`
+              DELETE FROM jobTask
+              WHERE taskid = @taskid
+            `)
+
+          resolve(task);
+        } catch (err) {
+          reject(err);
+        }
+        sql.close();
+      })()
+    })
+  }
 }
 
 module.exports = Task;

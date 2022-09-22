@@ -9,6 +9,9 @@ const Task = require("../models/task");
 const Category = require("../models/category");
 const Status = require("../models/status");
 
+const admin = require('../middleware/admin');
+const check = require('../middleware/checkauthorization');
+
 
 
 // Get all the tasks
@@ -189,6 +192,31 @@ router.put('/:taskid', [autheticate], async (req, res) => {
   }
 })
 
+router.delete('/:taskid', [autheticate, admin, check], async (req, res) => {
+   try {
+      const schema = Joi.object({
+            taskid: Joi.number()
+              .integer()
+              .min(1)
+              .required()
+          })
+
+      const {error} = schema.validate(req.params);
+      if (error) throw {statusCode: 400, errorMessage: `Badly formatted request`, errorObj: error}
+
+      const task = await Task.readByTaskId(req.params.taskid);
+      const deleteTask = await task.deleteTask();
+      return res.send(JSON.stringify(deleteTask));
+
+
+   } catch (err) { 
+      if (err.statusCode) {
+        return res.status(err.statusCode).send(JSON.stringify(err));
+      }
+      return res.status(500).send(JSON.stringify(err));
+   }
+    
+})
 
 
 
