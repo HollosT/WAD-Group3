@@ -74,6 +74,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", [autheticate], async (req, res) => {
   try {
+
     const { error } = Task.validate(req.body);
     if (error)
       throw {
