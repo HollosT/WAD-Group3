@@ -30,3 +30,4 @@ app.use("/api/accounts", accounts);
 app.listen(config.get("port"), () =>
   console.log(`Listening on port: ${config.get("port")}...`)
 );
+

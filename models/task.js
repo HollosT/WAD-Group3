@@ -198,6 +198,8 @@ class Task {
                     FROM jobTask t
                         INNER JOIN jobAccount a 
                         ON t.FK_accountid = a.accountid
+                            INNER JOIN jobProfile p
+                            ON a.FK_profileid = p.profileid
                             INNER JOIN jobStatus s
                             ON t.FK_statusid = s.statusid
                             INNER JOIN jobCategory c
@@ -219,7 +221,12 @@ class Task {
                 account: {
                   accountid: result.recordset[0].accountid,
                 },
-
+                profile: {
+                  profileid: result.recordset[0].profileid,
+                  firstname: result.recordset[0].firstname,
+                  lastname: result.recordset[0].lastname,
+                  phonenumber: result.recordset[0].phonenumber,
+                },
                 category: {
                   categoryid: result.recordset[0].categoryid,
                   categoryname: result.recordset[0].categoryname,

@@ -92,6 +92,33 @@ router.post("/", [autheticate], async (req, res) => {
   }
 });
 
+// get a specific task among the own tasks
+router.get('/own/:taskid', [autheticate], async (req, res) => {
+  try {
+    const schema = Joi.object({
+      taskid: Joi.number()
+       .integer()
+       .min(1)
+       .required()
+   })
+   
+   let validationResult = schema.validate(req.params);
+   if (validationResult.error) throw { statusCode: 400, errorMessage: `Badly formatted request`, errorObj: validationResult.error }
+
+
+    const taskById = await Task.readByTaskId(req.params.taskid);
+    
+    if(taskById.account.accountid != req.account.accountid) throw { statusCode: 403, errorMessage: `Cannot get task with taskid: ${req.params.taskid}`, errorObj: {} }
+
+    res.send(JSON.stringify(taskById));
+    
+  } catch (err) {
+    if (err.statusCode)
+    return res.status(err.statusCode).send(JSON.stringify(err));
+  }
+
+})
+
 //get all the task for specific profile
 router.get("/own", [autheticate], async (req, res) => {
   try {
@@ -119,8 +146,6 @@ router.get('/:taskid', [autheticate], async (req, res) => {
 
     const taskById = await Task.readByTaskId(req.params.taskid);
     
-    if(taskById.account.accountid != req.account.accountid) throw { statusCode: 403, errorMessage: `Cannot get task with taskid: ${req.params.taskid}`, errorObj: {} }
-
     res.send(JSON.stringify(taskById));
     
   } catch (err) {
