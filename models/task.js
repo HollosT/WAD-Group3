@@ -110,7 +110,6 @@ class Task {
           // join profile with account
           // join task with status
           // join task with category
-
           const result = await pool.request().query(
             `
                         SELECT * 
@@ -207,7 +206,7 @@ class Task {
                     WHERE t.taskid = @taskid
                     ORDER BY t.taskid
             `)
- 
+            
            if (result.recordset.length > 1) throw { statusCode: 500, errorMessage: `Corrupt DB, mulitple tasks with taskid: ${taskid}`, errorObj: {} };
            if (result.recordset.length == 0) throw { statusCode: 404, errorMessage: `Author not found by taksid: ${taskid}`, errorObj: {} };
 
@@ -426,7 +425,6 @@ class Task {
               DELETE FROM jobTask
               WHERE taskid = @taskid
             `)
-
           resolve(task);
         } catch (err) {
           reject(err);
@@ -435,6 +433,7 @@ class Task {
       })()
     })
   }
+
 }
 
 module.exports = Task;

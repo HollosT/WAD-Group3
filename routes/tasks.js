@@ -226,7 +226,7 @@ router.delete('/:taskid', [autheticate, admin, check], async (req, res) => {
               .min(1)
               .required()
           })
-
+          
       const {error} = schema.validate(req.params);
       if (error) throw {statusCode: 400, errorMessage: `Badly formatted request`, errorObj: error}
 
