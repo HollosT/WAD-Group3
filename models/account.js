@@ -97,7 +97,7 @@ class Account {
   }
 
   static readByEmail(email) {
-
+    console.log('test');
     return new Promise((resolve, reject) => {
       (async () => {
         try {

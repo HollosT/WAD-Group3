@@ -187,11 +187,10 @@ class Task {
 
   static readByTaskId(taskid) {
     return new Promise((resolve, reject) => {
-      (async ()=> {
-        try{
-          const pool = await sql.connect(con)
-          const result = await pool.request()
-            .input('taskid', sql.Int(), taskid)
+      (async () => {
+        try {
+          const pool = await sql.connect(con);
+          const result = await pool.request().input("taskid", sql.Int(), taskid)
             .query(`
                     SELECT * 
                     FROM jobTask t
@@ -205,48 +204,62 @@ class Task {
                             ON t.FK_categoryid = c.categoryid        
                     WHERE t.taskid = @taskid
                     ORDER BY t.taskid
-            `)
-            
-           if (result.recordset.length > 1) throw { statusCode: 500, errorMessage: `Corrupt DB, mulitple tasks with taskid: ${taskid}`, errorObj: {} };
-           if (result.recordset.length == 0) throw { statusCode: 404, errorMessage: `Author not found by taksid: ${taskid}`, errorObj: {} };
+            `);
 
-           const taskWannabe = {
-                taskid: result.recordset[0].taskid,
-                tasktitle: result.recordset[0].tasktitle,
-                taskdescription: result.recordset[0].taskdescription,
-                taskaddress: result.recordset[0].taskaddress,
-                taskpostdate: result.recordset[0].taskpostdate,
-                tasksalary: result.recordset[0].tasksalary,
-                account: {
-                  accountid: result.recordset[0].accountid,
-                },
-                profile: {
-                  profileid: result.recordset[0].profileid,
-                  firstname: result.recordset[0].firstname,
-                  lastname: result.recordset[0].lastname,
-                  phonenumber: result.recordset[0].phonenumber,
-                },
-                category: {
-                  categoryid: result.recordset[0].categoryid,
-                  categoryname: result.recordset[0].categoryname,
-                },
+          if (result.recordset.length > 1)
+            throw {
+              statusCode: 500,
+              errorMessage: `Corrupt DB, mulitple tasks with taskid: ${taskid}`,
+              errorObj: {},
+            };
+          if (result.recordset.length == 0)
+            throw {
+              statusCode: 404,
+              errorMessage: `Task not found by taskid: ${taskid}`,
+              errorObj: {},
+            };
 
-                status: {
-                  statusid: result.recordset[0].statusid,
-                  statusname: result.recordset[0].statusname,
-                },
-           }
+          const taskWannabe = {
+            taskid: result.recordset[0].taskid,
+            tasktitle: result.recordset[0].tasktitle,
+            taskdescription: result.recordset[0].taskdescription,
+            taskaddress: result.recordset[0].taskaddress,
+            taskpostdate: result.recordset[0].taskpostdate,
+            tasksalary: result.recordset[0].tasksalary,
+            account: {
+              accountid: result.recordset[0].accountid,
+            },
+            profile: {
+              profileid: result.recordset[0].profileid,
+              firstname: result.recordset[0].firstname,
+              lastname: result.recordset[0].lastname,
+              phonenumber: result.recordset[0].phonenumber,
+            },
+            category: {
+              categoryid: result.recordset[0].categoryid,
+              categoryname: result.recordset[0].categoryname,
+            },
 
-           const { error } = Task.validate(taskWannabe);
-           if (error) throw { statusCode: 500, errorMessage: `Corrupt DB, task does not validate: ${taskWannabe.taskid}`, errorObj: error };
+            status: {
+              statusid: result.recordset[0].statusid,
+              statusname: result.recordset[0].statusname,
+            },
+          };
 
-           resolve(new Task(taskWannabe))
+          const { error } = Task.validate(taskWannabe);
+          if (error)
+            throw {
+              statusCode: 500,
+              errorMessage: `Corrupt DB, task does not validate: ${taskWannabe.taskid}`,
+              errorObj: error,
+            };
 
-        }catch(err) {
-          reject(err)
+          resolve(new Task(taskWannabe));
+        } catch (err) {
+          reject(err);
         }
       })();
-    })
+    });
   }
 
   // Creating task
@@ -344,8 +357,6 @@ class Task {
               },
             };
             tasksCollection.push(newTask);
-
-            
           });
 
           // validation
@@ -364,7 +375,6 @@ class Task {
           });
 
           resolve(tasks);
-
         } catch (err) {
           reject(err);
         }
@@ -374,41 +384,39 @@ class Task {
     });
   }
 
-
   updateTask() {
     return new Promise((resolve, reject) => {
       (async () => {
-        try{
+        try {
           let tmpResult;
 
-          tmpResult = await Task.readByTaskId(this.taskid)
+          tmpResult = await Task.readByTaskId(this.taskid);
 
           const pool = await sql.connect(con);
 
-          tmpResult = await pool.request()
-            .input('taskid', sql.Int(), this.taskid)
-            .input('tasktitle', sql.NVarChar(), this.tasktitle)
-            .input('taskdescription', sql.NVarChar(), this.taskdescription)
-            .input('taskaddress', sql.NVarChar(), this.taskaddress)
-            .input('taskpostdate', sql.BigInt(), this.taskpostdate)
-            .input('tasksalary', sql.Int(), this.tasksalary)
-            .input('categoryid', sql.Int(), this.category.categoryid)
-            .input('statusid', sql.Int(), this.status.statusid)
-            .query(`
+          tmpResult = await pool
+            .request()
+            .input("taskid", sql.Int(), this.taskid)
+            .input("tasktitle", sql.NVarChar(), this.tasktitle)
+            .input("taskdescription", sql.NVarChar(), this.taskdescription)
+            .input("taskaddress", sql.NVarChar(), this.taskaddress)
+            .input("taskpostdate", sql.BigInt(), this.taskpostdate)
+            .input("tasksalary", sql.Int(), this.tasksalary)
+            .input("categoryid", sql.Int(), this.category.categoryid)
+            .input("statusid", sql.Int(), this.status.statusid).query(`
                 UPDATE jobTask
                 SET tasktitle = @tasktitle, taskdescription = @taskdescription, taskaddress = @taskaddress, taskpostdate = @taskpostdate, tasksalary = @tasksalary, FK_categoryid = @categoryid, Fk_statusid = @statusid
                 WHERE taskid = @taskid
-            `)
-            sql.close()
+            `);
+          sql.close();
 
-            const task = await Task.readByTaskId(this.taskid)
-            resolve(task)
-
-        }catch(err){
-            reject(err)
+          const task = await Task.readByTaskId(this.taskid);
+          resolve(task);
+        } catch (err) {
+          reject(err);
         }
       })();
-    })
+    });
   }
 
   deleteTask() {
@@ -419,21 +427,19 @@ class Task {
           const pool = await sql.connect(con);
 
           let result;
-          result = await pool.request()
-            .input('taskid', sql.Int(), this.taskid)
+          result = await pool.request().input("taskid", sql.Int(), this.taskid)
             .query(`
               DELETE FROM jobTask
               WHERE taskid = @taskid
-            `)
+            `);
           resolve(task);
         } catch (err) {
           reject(err);
         }
         sql.close();
-      })()
-    })
+      })();
+    });
   }
-
 }
 
 module.exports = Task;

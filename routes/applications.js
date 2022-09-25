@@ -28,4 +28,27 @@ router.post('/', [autheticate], async (req, res) => {
 })
 
 
+router.get('/:taskid', [autheticate], async (req, res) => {
+  try {
+    const schema = Joi.object({
+      taskid: Joi.number()
+       .integer()
+       .min(1)
+       .required()
+   })
+
+   let validationResult = schema.validate(req.params);
+   if (validationResult.error) throw { statusCode: 400, errorMessage: `Badly formatted request`, errorObj: validationResult.error }
+
+   const applicationByTaskId = await Application.readByApplicants(req.params.taskid);
+
+   res.send(JSON.stringify(applicationByTaskId));
+    
+  } catch (err) {
+    if (err.statusCode)
+    return res.status(err.statusCode).send(JSON.stringify(err));
+  }
+
+})
+
 module.exports = router
