@@ -26,9 +26,8 @@ class Profile {
             lastname: Joi.string()
             .max(50)
             .required(),
-            phonenumber: Joi.number()
-            .integer()
-            .required(),
+            phonenumber: Joi.string()
+            .min(1),
             profiledescription: Joi.string()
             .max(255)
             .allow(null),

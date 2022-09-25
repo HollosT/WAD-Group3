@@ -216,9 +216,9 @@ class Application {
               ]);
               const accountWannabe = _.pick(profile, ["accountid", "email"]);
               
-              let validationResult;
-              validationResult = Profile.validate(profileWannabe);
-              console.log(validationResult.error);
+              
+              let validationResult = Profile.validate(profileWannabe);
+           
               if (validationResult.error)
                 throw {
                   statusCode: 400,
@@ -237,8 +237,8 @@ class Application {
               const profileToBeSaved = new Profile(profileWannabe);
               const accountToBeSaved = new Account(accountWannabe);
 
-            //   console.log(profileToBeSaved);
               const account = { ...profileToBeSaved, ...accountToBeSaved };
+              console.log(account);
 
               console.log(account);
               profiles.push(account);
