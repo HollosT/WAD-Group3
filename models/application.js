@@ -148,7 +148,7 @@ class Application {
               accountid: last.FK_accountid,
             },
           };
-          console.log(applicationWannabe);
+        //   console.log(applicationWannabe);
           const { error } = Application.validate(applicationWannabe);
           if (error)
             throw {
@@ -156,7 +156,7 @@ class Application {
               errorMessage: `Corrupt DB, task does not validate: ${applicationWannabe.taskid}`,
               errorObj: error,
             };
-          console.log(new Application(applicationWannabe));
+        //   console.log(new Application(applicationWannabe));
 
           resolve(applicationWannabe);
         } catch (err) {
@@ -200,13 +200,16 @@ class Application {
               firstname: profile.firstname,
               lastname: profile.lastname,
               phonenumber: profile.phonenumber,
-              accountid: { accountid: profile.accountid, email: profile.email },
-            };
+              accountid: profile.accountid, 
+              email: profile.email
+            }
+            
 
             
             profilesCollection.push(almostProfile);
 
             const profiles = [];
+            console.log(profilesCollection);
             profilesCollection.forEach((profile) => {
               const profileWannabe = _.pick(profile, [
                 "profileid",
@@ -215,7 +218,7 @@ class Application {
                 "profiledescription",
               ]);
               const accountWannabe = _.pick(profile, ["accountid", "email"]);
-              
+            //   console.log(accountWannabe);
               
               let validationResult = Profile.validate(profileWannabe);
            
@@ -237,10 +240,8 @@ class Application {
               const profileToBeSaved = new Profile(profileWannabe);
               const accountToBeSaved = new Account(accountWannabe);
 
-              const account = { ...profileToBeSaved, ...accountToBeSaved };
-              console.log(account);
 
-              console.log(account);
+              const account = { ...profileToBeSaved, ...accountToBeSaved };
               profiles.push(account);
             });
 
