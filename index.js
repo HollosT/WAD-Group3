@@ -13,6 +13,7 @@ const tasks = require("./routes/tasks");
 const login = require("./routes/login");
 const accounts = require("./routes/accounts");
 const profiles = require("./routes/profiles");
+const applications = require("./routes/applications");
 
 app.use(express.json());
 const corsOptions = {
@@ -21,7 +22,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(responseHeader);
 
-// app.use("/api/tasks/own/taskid", tasks);
+app.use("/api/application", applications);
 app.use("/api/tasks", tasks);
 app.use("/api/profiles", profiles);
 app.use("/api/accounts/login", login);

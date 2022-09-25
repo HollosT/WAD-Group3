@@ -17,4 +17,4 @@ GO
 
 -- GO
 
-SELECT * FROM jobTask
+SELECT * FROM jobApplication

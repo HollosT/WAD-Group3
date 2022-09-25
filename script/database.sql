@@ -8,6 +8,15 @@ GO
 DROP TABLE IF EXISTS jobPassword
 GO
 
+ALTER TABLE jobApplication
+DROP CONSTRAINT IF EXISTS jobFK_Application_Task
+GO
+ALTER TABLE jobApplication
+DROP CONSTRAINT IF EXISTS jobFK_Application_Account
+GO
+DROP TABLE IF EXISTS jobApplication
+GO
+
 ALTER TABLE jobTask
 DROP CONSTRAINT IF EXISTS jobFK_Task_Account 
 GO
@@ -114,6 +123,16 @@ CREATE TABLE jobTask
 )
 GO
 
+CREATE TABLE jobApplication
+(
+    FK_taskid INT NOT NULL,
+    FK_accountid INT NOT NULL
+   
+    CONSTRAINT jobFK_Application_Task FOREIGN KEY (FK_taskid) REFERENCES jobTask (taskid),
+    CONSTRAINT jobFK_Application_Account FOREIGN KEY (FK_accountid) REFERENCES jobAccount (accountid),
+)
+GO
+
 CREATE TABLE jobPassword
 (
     FK_accountid INT NOT NULL,
@@ -153,14 +172,16 @@ INSERT INTO jobProfile
     ([firstname], [lastname], [phonenumber], [profiledescription], [profilepicture])
     VALUES
     ('Jan', 'Kowalski', '45892642', 'Hello bla bla bla here i am', NULL),
-    ('Lili', 'Obrien', '73727722', 'I am a preffessional horse rider.', NULL)
+    ('Lili', 'Obrien', '73727722', 'I am a preffessional horse rider.', NULL),
+    ('Connor', 'Yellow', '232134124', 'I am a preffessional painter.', NULL)
 GO
 
 INSERT INTO jobAccount 
     ([email], [FK_profileid], [FK_roleid])
     VALUES 
     ('ralala@gmail.com', 1, 1),
-    ('blue@gmail.com', 2, 2)
+    ('blue@gmail.com', 2, 2),
+    ('red@gmail.com', 3, 2)
 GO
 
 INSERT INTO jobTask
@@ -179,7 +200,14 @@ INSERT INTO jobPassword
     ([FK_accountid], [hashedpassword])
     VALUES
     (1, '$2a$13$Q2jY.Mj2BDR1cXCuw3.8XuaoacsCg/5qtTmwt66AeNsSJLd/qEBPO'),
-    (2, '$2a$13$NMHMd75HwjKB2H2oumBQdurBTFfnrHy.pQnv/lrUcqIWuwODZU8QG')
+    (2, '$2a$13$NMHMd75HwjKB2H2oumBQdurBTFfnrHy.pQnv/lrUcqIWuwODZU8QG'),
+    (3, '$2a$13$NMHMd75HwjKB2H2oumBQdurBTFfnrHy.pQnv/lrUcqIWuwODZU8QG')
+GO
+INSERT INTO jobApplication 
+    ([FK_taskid], [FK_accountid])
+    VALUES
+    (1, 2),
+    (1, 3)
 GO
 -- Passwords: 
 -- (1, cat)
