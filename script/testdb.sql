@@ -17,4 +17,14 @@ GO
 
 -- GO
 
-SELECT * FROM jobApplication
+-- SELECT * FROM jobAccount a
+--  INNER JOIN jobProfile pr
+--  pr.profileid = a.FK_profileid
+
+
+SELECT * FROM jobApplication ap
+ INNER JOIN jobAccount a
+ ON ap.FK_accountid = a.accountid
+ INNER JOIN jobProfile pr
+ ON pr.profileid = a.FK_profileid
+  WHERE ap.FK_taskid = 1

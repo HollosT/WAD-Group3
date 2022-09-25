@@ -4,7 +4,9 @@ const sql = require("mssql");
 const config = require("config");
 const Task = require("./task");
 const Account = require("./account");
+const Profile = require("./profile");
 const con = config.get("dbConfig_UCN");
+const _ = require("lodash");
 
 class Application {
   constructor(applicationObj) {
@@ -86,21 +88,19 @@ class Application {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-
           try {
             const task = await Task.readByTaskId(this.taskid);
             if (task.account.accountid === this.account.accountid)
-            return reject({
-              statusCode: 500,
-              errorMessage: `You can not apply for your own task!`,
-              errorObj: {}
-            });
-
-        } catch (err) {
-           if (err.statusCode) {
+              return reject({
+                statusCode: 500,
+                errorMessage: `You can not apply for your own task!`,
+                errorObj: {},
+              });
+          } catch (err) {
+            if (err.statusCode) {
               reject(err);
             }
-        }
+          }
 
           // check whether they have already applied
           try {
@@ -167,21 +167,85 @@ class Application {
     });
   }
 
-  readByApplicants() {
+  static readByApplicants(taskid) {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
+          // console.log(taskid)
           const pool = await sql.connect(con);
-          const result = await pool
-            .request()
-            .input("taskid", sql.Int(), this.taskid).query(`
-                            SELECT * FROM jobApplication ap
-                                INNER JOIN jobAccount a
-                                ON ap.FK_accountid = a.accountid
-                                INNER JOIN jobProfile p
-                                p.FK_accountid = a.accountid
+          const result = await pool.request().input("taskid", sql.Int(), taskid)
+            .query(`
+                        SELECT * FROM jobApplication ap
+                        INNER JOIN jobAccount a
+                        ON ap.FK_accountid = a.accountid
+                        INNER JOIN jobProfile pr
+                        ON pr.profileid = a.FK_profileid
                             WHERE ap.FK_taskid = @taskid
                         `);
+
+          
+          if (result.recordset.length === 0)
+            throw {
+              statusCode: 404,
+              errorMessage: `Nobody has applied for this job yet`,
+              errorObj: {},
+            };
+
+          let profilesCollection = [];
+
+          result.recordset.forEach((profile) => {
+            const almostProfile = {
+              profileid: profile.profileid,
+              profiledescription: profile.profiledescription,
+              firstname: profile.firstname,
+              lastname: profile.lastname,
+              phonenumber: profile.phonenumber,
+              accountid: { accountid: profile.accountid, email: profile.email },
+            };
+
+            
+            profilesCollection.push(almostProfile);
+
+            const profiles = [];
+            profilesCollection.forEach((profile) => {
+              const profileWannabe = _.pick(profile, [
+                "profileid",
+                "firstname",
+                "lastname",
+                "profiledescription",
+              ]);
+              const accountWannabe = _.pick(profile, ["accountid", "email"]);
+              
+              let validationResult;
+              validationResult = Profile.validate(profileWannabe);
+              console.log(validationResult.error);
+              if (validationResult.error)
+                throw {
+                  statusCode: 400,
+                  errorMessage: "Badly formatted request",
+                  errorObj: validationResult.error,
+                };
+
+              validationResult = Account.validate(accountWannabe);
+              if (validationResult.error)
+                throw {
+                  statusCode: 400,
+                  errorMessage: "Badly formatted request",
+                  errorObj: validationResult.error,
+                };
+
+              const profileToBeSaved = new Profile(profileWannabe);
+              const accountToBeSaved = new Account(accountWannabe);
+
+            //   console.log(profileToBeSaved);
+              const account = { ...profileToBeSaved, ...accountToBeSaved };
+
+              console.log(account);
+              profiles.push(account);
+            });
+
+            resolve(profiles);
+          });
         } catch (err) {
           reject(err);
         }

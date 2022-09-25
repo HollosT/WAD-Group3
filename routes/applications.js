@@ -38,6 +38,7 @@ router.get('/:taskid', [autheticate], async (req, res) => {
    })
 
    let validationResult = schema.validate(req.params);
+   
    if (validationResult.error) throw { statusCode: 400, errorMessage: `Badly formatted request`, errorObj: validationResult.error }
 
    const applicationByTaskId = await Application.readByApplicants(req.params.taskid);
