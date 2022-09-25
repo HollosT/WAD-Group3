@@ -23,8 +23,8 @@ GO
 
 
 SELECT * FROM jobApplication ap
- INNER JOIN jobAccount a
- ON ap.FK_accountid = a.accountid
- INNER JOIN jobProfile pr
- ON pr.profileid = a.FK_profileid
-  WHERE ap.FK_taskid = 1
+--  INNER JOIN jobAccount a
+--  ON ap.FK_accountid = a.accountid
+--  INNER JOIN jobProfile pr
+--  ON pr.profileid = a.FK_profileid
+--   WHERE ap.FK_taskid = 1

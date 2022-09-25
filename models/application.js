@@ -183,7 +183,7 @@ class Application {
                             WHERE ap.FK_taskid = @taskid
                         `);
 
-          
+               
           if (result.recordset.length === 0)
             throw {
               statusCode: 404,
@@ -193,7 +193,7 @@ class Application {
 
           let profilesCollection = [];
 
-          result.recordset.forEach((profile) => {
+          result.recordset.forEach(profile => {
             const almostProfile = {
               profileid: profile.profileid,
               profiledescription: profile.profiledescription,
@@ -204,12 +204,11 @@ class Application {
               email: profile.email
             }
             
-
-            
             profilesCollection.push(almostProfile);
-
+          });
+            
             const profiles = [];
-            console.log(profilesCollection);
+
             profilesCollection.forEach((profile) => {
               const profileWannabe = _.pick(profile, [
                 "profileid",
@@ -246,7 +245,7 @@ class Application {
             });
 
             resolve(profiles);
-          });
+          
         } catch (err) {
           reject(err);
         }
