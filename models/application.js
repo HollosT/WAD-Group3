@@ -214,6 +214,7 @@ class Application {
                 "profileid",
                 "firstname",
                 "lastname",
+                "phonenumber",
                 "profiledescription",
               ]);
               const accountWannabe = _.pick(profile, ["accountid", "email"]);
