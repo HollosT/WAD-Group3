@@ -37,22 +37,20 @@ class Application {
     return new Promise((resolve,reject) => {
       (async() => {
         try{
-
           const pool = await sql.connect(con);
           const result = await pool.request()
-            .input('taskid', sql.Int(), taskid)
-            .query(`
-                SELECT *
-                FROM jobApplication a
-                WHERE a.FK_taskid = @taskid
+          .input('taskid', sql.Int(), taskid)
+          .query(`
+          SELECT *
+          FROM jobApplication a
+          WHERE a.FK_taskid = @taskid
+          
+          `)
 
-            `)
-            if (result.recordset.length == 0)
-            throw {
-              statusCode: 404,
-              errorMessage: `There is no application for this task!`,
-              errorObj: {},
-            };
+          let applications = [];
+
+          if (result.recordset.length == 0) resolve(applications)
+          
 
             let applicationArr = []
             result.recordset.forEach(record => {
@@ -62,11 +60,9 @@ class Application {
                   accountid: record.FK_accountid,
                 },
               }
-              
               applicationArr.push(applicationWannabe)
             })
 
-            let applications = [];
             applicationArr.forEach(applicant => {
               const { error } = Application.validate(applicant);
 
@@ -78,6 +74,7 @@ class Application {
               };
             applications.push(new Application(applicant));
             })
+            console.log(applications);
             resolve(applications)
 
         }catch(err){
@@ -309,8 +306,10 @@ static deleteApplication(taskid) {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-
           const application = await Application.readApplicationById(taskid);
+
+          if(application.length == 0) return resolve('There is no application to delete')
+
           
           const pool = await sql.connect(con);
 
