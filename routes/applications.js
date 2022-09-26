@@ -4,8 +4,7 @@ const _ = require('lodash');
 const Joi = require('joi');
 const autheticate = require('../middleware/autheticate');
 const Application = require('../models/application')
-const Task = require('../models/task')
-const Account = require('../models/account')
+
 
 router.post('/', [autheticate], async (req, res) => {
     try {

@@ -97,7 +97,6 @@ class Account {
   }
 
   static readByEmail(email) {
-    console.log('test');
     return new Promise((resolve, reject) => {
       (async () => {
         try {
@@ -146,7 +145,7 @@ class Account {
   // creating a password method
 
   create(password, profileObj) {
-    // console.log('h')
+
     return new Promise((resolve, reject) => {
       (async () => {
           try {

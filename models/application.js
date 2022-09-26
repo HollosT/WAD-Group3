@@ -34,7 +34,6 @@ class Application {
   }
 
   static readApplicationById(taskid) {
-    console.log(taskid);
     return new Promise((resolve,reject) => {
       (async() => {
         try{
@@ -45,8 +44,6 @@ class Application {
             .query(`
                 SELECT *
                 FROM jobApplication a
-                INNER JOIN jobAccount ac
-                ON a.FK_accountid = ac.accountid
                 WHERE a.FK_taskid = @taskid
 
             `)
@@ -63,9 +60,9 @@ class Application {
                 taskid: record.FK_taskid,
                 account: {
                   accountid: record.FK_accountid,
-                  email: record.email,
                 },
               }
+              
               applicationArr.push(applicationWannabe)
             })
 
@@ -81,7 +78,6 @@ class Application {
               };
             applications.push(new Application(applicant));
             })
-
             resolve(applications)
 
         }catch(err){
@@ -96,7 +92,7 @@ class Application {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          // console.log(taskid)
+          
           const pool = await sql.connect(con);
           const result = await pool.request().input("taskid", sql.Int(), taskid)
             .query(`
@@ -143,7 +139,6 @@ class Application {
                 "profiledescription",
               ]);
               const accountWannabe = _.pick(profile, ["accountid", "email"]);
-            //   console.log(accountWannabe);
               
               let validationResult = Profile.validate(profileWannabe);
            
@@ -239,7 +234,6 @@ class Application {
             
             const task = await Task.readByTaskId(this.taskid);
 
-            console.log(task);
             if (task.account.accountid === this.account.accountid)
               return reject({
                 statusCode: 500,
@@ -293,7 +287,7 @@ class Application {
               accountid: last.FK_accountid,
             },
           };
-        //   console.log(applicationWannabe);
+
           const { error } = Application.validate(applicationWannabe);
           if (error)
             throw {
@@ -301,7 +295,6 @@ class Application {
               errorMessage: `Corrupt DB, task does not validate: ${applicationWannabe.taskid}`,
               errorObj: error,
             };
-        //   console.log(new Application(applicationWannabe));
 
           resolve(applicationWannabe);
         } catch (err) {
@@ -312,6 +305,29 @@ class Application {
     });
   }
 
+static deleteApplication(taskid) {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+
+          const application = await Application.readApplicationById(taskid);
+          
+          const pool = await sql.connect(con);
+
+          let result;
+          result = await pool.request().input("taskid", sql.Int(), taskid)
+            .query(`
+              DELETE FROM jobApplication
+              WHERE FK_taskid = @taskid
+            `);
+          resolve(application);
+        } catch (err) {
+          reject(err);
+        }
+        sql.close();
+      })();
+    });
+  }
   
 }
 
