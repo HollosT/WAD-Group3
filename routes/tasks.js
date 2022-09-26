@@ -66,7 +66,7 @@ router.get("/", async (req, res) => {
     if (err.statusCode) {
       return res.status(err.statusCode).send(JSON.stringify(err));
     }
-    return res.status(500).send(JSON.stringify(err)); // !!!!! Chrashes nodemon
+    return res.status(500).send(JSON.stringify(err));
   }
 });
 
