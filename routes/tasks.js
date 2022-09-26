@@ -231,10 +231,12 @@ router.delete('/:taskid', [autheticate, admin, check], async (req, res) => {
       const {error} = schema.validate(req.params);
       if (error) throw {statusCode: 400, errorMessage: `Badly formatted request`, errorObj: error}
 
-      const application = await Application.readApplicationById(req.params.taskid);
-      const deleteApplication = await application.deleteApplication()
+      // const application = await Application.readApplicationById(req.params.taskid);
+      // console.log(application);
+      // const deleteApplication = await application.deleteApplication()
       
       const task = await Task.readByTaskId(req.params.taskid);
+  
       const deleteTask = await task.deleteTask();
       return res.send(JSON.stringify(deleteTask));
 

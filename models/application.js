@@ -34,6 +34,7 @@ class Application {
   }
 
   static readApplicationById(taskid) {
+    console.log(taskid);
     return new Promise((resolve,reject) => {
       (async() => {
         try{
@@ -44,6 +45,8 @@ class Application {
             .query(`
                 SELECT *
                 FROM jobApplication a
+                INNER JOIN jobAccount ac
+                ON a.FK_accountid = ac.accountid
                 WHERE a.FK_taskid = @taskid
 
             `)
@@ -60,6 +63,7 @@ class Application {
                 taskid: record.FK_taskid,
                 account: {
                   accountid: record.FK_accountid,
+                  email: record.email,
                 },
               }
               applicationArr.push(applicationWannabe)
@@ -83,142 +87,9 @@ class Application {
         }catch(err){
           reject(err)
         }
+        sql.close()
       })()
     })
-  }
-
-  static checkApplication(taskid, accountid) {
-    return new Promise((resolve, reject) => {
-      (async () => {
-        try {
-          const pool = await sql.connect(con);
-          const result = await pool
-            .request()
-            .input("taskid", sql.Int(), taskid)
-            .input("accountid", sql.Int(), accountid).query(`
-                            SELECT *
-                            FROM jobApplication a
-                            WHERE a.FK_taskid = @taskid
-                            AND a.FK_accountid = @accountid
-                        `);
-
-          if (result.recordset.length > 1)
-            throw {
-              statusCode: 500,
-              errorMessage: `Corrupt DB, mulitple authors with taskid: ${taskid} and accountid: ${accountid}`,
-              errorObj: {},
-            };
-          if (result.recordset.length == 0)
-            throw {
-              statusCode: 404,
-              errorMessage: `Task has not been applied yet by accountid: ${accountid}`,
-              errorObj: {},
-            };
-
-          const applicationWannabe = {
-            taskid: result.recordset[0].FK_taskid,
-            account: {
-              accountid: result.recordset[0].FK_accountid,
-            },
-          };
-          const { error } = Application.validate(applicationWannabe);
-          if (error)
-            throw {
-              statusCode: 500,
-              errorMessage: `Corrupt DB, application does not validate`,
-              errorObj: error,
-            };
-
-          resolve(new Application(applicationWannabe));
-        } catch (err) {
-          reject(err);
-        }
-        sql.close();
-      })();
-    });
-  }
-
-  createApplication() {
-    return new Promise((resolve, reject) => {
-      (async () => {
-        try {
-          try {
-            const task = await Task.readByTaskId(this.taskid);
-            if (task.account.accountid === this.account.accountid)
-              return reject({
-                statusCode: 500,
-                errorMessage: `You can not apply for your own task!`,
-                errorObj: {},
-              });
-          } catch (err) {
-            if (err.statusCode) {
-              reject(err);
-            }
-          }
-
-          // check whether they have already applied
-          try {
-            const application = await Application.checkApplication(
-              this.taskid,
-              this.account.accountid
-            );
-
-            const error = {
-              statusCode: 409,
-              errorMessage: `You already applied!`,
-              errorObj: {},
-            };
-            return reject(error);
-          } catch (err) {
-            if (!err.statusCode || err.statusCode != 404) {
-              reject(err);
-            }
-          }
-
-          const pool = await sql.connect(con);
-          const result = await pool
-            .request()
-            .input("taskid", sql.Int(), this.taskid)
-            .input("accountid", sql.Int(), this.account.accountid).query(`
-                            INSERT INTO jobApplication
-                                ([FK_taskid], [FK_accountid])
-                            VALUES
-                                (@taskid, @accountid)
-                            SELECT *
-                            FROM jobApplication a
-        
-                        `);
-          //  INNER JOIN jobTask t
-          // ON ap.FK_taskid = t.taskid
-          // INNER JOIN jobAccount a
-          // ON ap.FK_accountid = a.accountid
-          // if(result.recordset.length != 1) throw{statusCode: 500, errorMessage: 'INSERT into Application table failed', errorObj: {}}
-
-          // const application = await result.recordset[result.recordset.length -1].FK_authorid;
-          const last = result.recordset[result.recordset.length - 1];
-          const applicationWannabe = {
-            taskid: last.FK_taskid,
-            account: {
-              accountid: last.FK_accountid,
-            },
-          };
-        //   console.log(applicationWannabe);
-          const { error } = Application.validate(applicationWannabe);
-          if (error)
-            throw {
-              statusCode: 500,
-              errorMessage: `Corrupt DB, task does not validate: ${applicationWannabe.taskid}`,
-              errorObj: error,
-            };
-        //   console.log(new Application(applicationWannabe));
-
-          resolve(applicationWannabe);
-        } catch (err) {
-          reject(err);
-        }
-        sql.close();
-      })();
-    });
   }
 
   static readByApplicants(taskid) {
@@ -309,22 +180,49 @@ class Application {
     });
   }
 
-  deleteApplication() {
+  static checkApplication(taskid, accountid) {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          console.log('test');
-          const application = await Task.readByTaskId(this.taskid);
           const pool = await sql.connect(con);
+          const result = await pool
+            .request()
+            .input("taskid", sql.Int(), taskid)
+            .input("accountid", sql.Int(), accountid).query(`
+                            SELECT *
+                            FROM jobApplication a
+                            WHERE a.FK_taskid = @taskid
+                            AND a.FK_accountid = @accountid
+                        `);
 
-          let result;
-          result = await pool.request()
-          .input("taskid", sql.Int(), this.taskid)
-            .query(`
-              DELETE FROM jobApplication 
-              WHERE FK_taskid = @taskid
-            `);
-          resolve(application);
+          if (result.recordset.length > 1)
+            throw {
+              statusCode: 500,
+              errorMessage: `Corrupt DB, mulitple authors with taskid: ${taskid} and accountid: ${accountid}`,
+              errorObj: {},
+            };
+          if (result.recordset.length == 0)
+            throw {
+              statusCode: 404,
+              errorMessage: `Task has not been applied yet by accountid: ${accountid}`,
+              errorObj: {},
+            };
+
+          const applicationWannabe = {
+            taskid: result.recordset[0].FK_taskid,
+            account: {
+              accountid: result.recordset[0].FK_accountid,
+            },
+          };
+          const { error } = Application.validate(applicationWannabe);
+          if (error)
+            throw {
+              statusCode: 500,
+              errorMessage: `Corrupt DB, application does not validate`,
+              errorObj: error,
+            };
+
+          resolve(new Application(applicationWannabe));
         } catch (err) {
           reject(err);
         }
@@ -332,6 +230,89 @@ class Application {
       })();
     });
   }
+
+  createApplication() {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          try {
+            
+            const task = await Task.readByTaskId(this.taskid);
+
+            console.log(task);
+            if (task.account.accountid === this.account.accountid)
+              return reject({
+                statusCode: 500,
+                errorMessage: `You can not apply for your own task!`,
+                errorObj: {},
+              });
+          } catch (err) {
+            if (err.statusCode) {
+              reject(err);
+            }
+          }
+
+          // check whether they have already applied
+          try {
+            const application = await Application.checkApplication(
+              this.taskid,
+              this.account.accountid
+            );
+
+            const error = {
+              statusCode: 409,
+              errorMessage: `You already applied!`,
+              errorObj: {},
+            };
+            return reject(error);
+          } catch (err) {
+            if (!err.statusCode || err.statusCode != 404) {
+              reject(err);
+            }
+          }
+
+          const pool = await sql.connect(con);
+          const result = await pool
+            .request()
+            .input("taskid", sql.Int(), this.taskid)
+            .input("accountid", sql.Int(), this.account.accountid).query(`
+                            INSERT INTO jobApplication
+                                ([FK_taskid], [FK_accountid])
+                            VALUES
+                                (@taskid, @accountid)
+                            SELECT *
+                            FROM jobApplication a
+        
+                        `);
+
+          // const application = await result.recordset[result.recordset.length -1].FK_authorid;
+          const last = result.recordset[result.recordset.length - 1];
+          const applicationWannabe = {
+            taskid: last.FK_taskid,
+            account: {
+              accountid: last.FK_accountid,
+            },
+          };
+        //   console.log(applicationWannabe);
+          const { error } = Application.validate(applicationWannabe);
+          if (error)
+            throw {
+              statusCode: 500,
+              errorMessage: `Corrupt DB, task does not validate: ${applicationWannabe.taskid}`,
+              errorObj: error,
+            };
+        //   console.log(new Application(applicationWannabe));
+
+          resolve(applicationWannabe);
+        } catch (err) {
+          reject(err);
+        }
+        sql.close();
+      })();
+    });
+  }
+
+  
 }
 
 module.exports = Application;

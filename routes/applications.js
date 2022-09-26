@@ -17,8 +17,8 @@ router.post('/', [autheticate], async (req, res) => {
             errorMessage: `Badly formatted request`,
             errorObj: error,
           };
-    
         const applicationToBeSaved = new Application(req.body);
+        
         const application = await applicationToBeSaved.createApplication();
         res.send(JSON.stringify(application));
       } catch (err) {

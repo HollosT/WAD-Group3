@@ -5,12 +5,7 @@ const config = require("config");
 const con = config.get("dbConfig_UCN");
 const _ = require("lodash");
 
-const Status = require("./status");
-const Category = require("./category");
-const Account = require("./account");
-const Profile = require("./profile");
-const { max } = require("lodash");
-const Application = require("./application");
+
 
 class Task {
   constructor(taskObj) {
@@ -259,6 +254,7 @@ class Task {
         } catch (err) {
           reject(err);
         }
+        sql.close();
       })();
     });
   }
@@ -416,6 +412,7 @@ class Task {
         } catch (err) {
           reject(err);
         }
+        sql.close()
       })();
     });
   }
