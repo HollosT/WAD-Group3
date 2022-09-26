@@ -22,6 +22,7 @@ GO
 --  pr.profileid = a.FK_profileid
 
 
+SELECT * FROM jobTask 
 SELECT * FROM jobApplication ap
 --  INNER JOIN jobAccount a
 --  ON ap.FK_accountid = a.accountid

@@ -10,6 +10,7 @@ const Category = require("./category");
 const Account = require("./account");
 const Profile = require("./profile");
 const { max } = require("lodash");
+const Application = require("./application");
 
 class Task {
   constructor(taskObj) {
@@ -423,6 +424,7 @@ class Task {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
+
           const task = await Task.readByTaskId(this.taskid);
           const pool = await sql.connect(con);
 

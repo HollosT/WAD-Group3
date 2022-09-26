@@ -33,6 +33,60 @@ class Application {
     return schema.validate(applicationObj);
   }
 
+  static readApplicationById(taskid) {
+    return new Promise((resolve,reject) => {
+      (async() => {
+        try{
+
+          const pool = await sql.connect(con);
+          const result = await pool.request()
+            .input('taskid', sql.Int(), taskid)
+            .query(`
+                SELECT *
+                FROM jobApplication a
+                WHERE a.FK_taskid = @taskid
+
+            `)
+            if (result.recordset.length == 0)
+            throw {
+              statusCode: 404,
+              errorMessage: `There is no application for this task!`,
+              errorObj: {},
+            };
+
+            let applicationArr = []
+            result.recordset.forEach(record => {
+              const applicationWannabe = {
+                taskid: record.FK_taskid,
+                account: {
+                  accountid: record.FK_accountid,
+                },
+              }
+              applicationArr.push(applicationWannabe)
+            })
+
+            let applications = [];
+            applicationArr.forEach(applicant => {
+              const { error } = Application.validate(applicant);
+
+              if (error)
+              throw {
+                statusCode: 500,
+                errorMessage: `Corrupt task information in the database, taskid: ${applicant.taskid}`,
+                errorObj: error,
+              };
+            applications.push(new Application(applicant));
+            })
+
+            resolve(applications)
+
+        }catch(err){
+          reject(err)
+        }
+      })()
+    })
+  }
+
   static checkApplication(taskid, accountid) {
     return new Promise((resolve, reject) => {
       (async () => {
@@ -62,9 +116,9 @@ class Application {
             };
 
           const applicationWannabe = {
-            taskid: result.recordset[0].taskid,
+            taskid: result.recordset[0].FK_taskid,
             account: {
-              accountid: result.recordset[0].accountid,
+              accountid: result.recordset[0].FK_accountid,
             },
           };
           const { error } = Application.validate(applicationWannabe);
@@ -247,6 +301,30 @@ class Application {
 
             resolve(profiles);
           
+        } catch (err) {
+          reject(err);
+        }
+        sql.close();
+      })();
+    });
+  }
+
+  deleteApplication() {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        try {
+          console.log('test');
+          const application = await Task.readByTaskId(this.taskid);
+          const pool = await sql.connect(con);
+
+          let result;
+          result = await pool.request()
+          .input("taskid", sql.Int(), this.taskid)
+            .query(`
+              DELETE FROM jobApplication 
+              WHERE FK_taskid = @taskid
+            `);
+          resolve(application);
         } catch (err) {
           reject(err);
         }
