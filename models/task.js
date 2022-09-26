@@ -45,9 +45,6 @@ class Task {
       };
     }
 
-    // this.accountArr = _.cloneDeep(taskObj.accountArr);
-    // this.statusArr = _.cloneDeep(taskObj.statusArr);
-    // this.categoryArr = _.cloneDeep(taskObj.categoryArr);
   }
 
   static validationSchema() {
@@ -79,8 +76,12 @@ class Task {
         categoryid: Joi.number().integer().required().min(1),
         categoryname: Joi.string(),
       }),
+      application: Joi.object({
+        FK_accountid: Joi.array().items(Joi.number().integer().min(1))
+    
+      })
 
-      // profileArr: Joi.array().items(Profile.validationSchema()),
+
       // accountArr: Joi.array().items(Account.validationSchema()),
       // statusArr: Joi.array().items(Status.validationSchema()),
       // categoryArr: Joi.array().items(Category.validationSchema()),
@@ -117,8 +118,7 @@ class Task {
                             INNER JOIN jobStatus s
                             ON t.FK_statusid = s.statusid
                             INNER JOIN jobCategory c
-                            ON t.FK_categoryid = c.categoryid        
-                              
+                            ON t.FK_categoryid = c.categoryid         
 
                         ORDER BY t.taskpostdate
                         `
