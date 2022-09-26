@@ -118,8 +118,9 @@ class Task {
                             ON t.FK_statusid = s.statusid
                             INNER JOIN jobCategory c
                             ON t.FK_categoryid = c.categoryid        
+                              
 
-                        ORDER BY t.taskid
+                        ORDER BY t.taskpostdate
                         `
           );
 
